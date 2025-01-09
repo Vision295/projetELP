@@ -1,16 +1,13 @@
 package main
 
 import (
-	// Create and manipulate images
+	"fmt"
 	"image"
 	"image/color"
 	"image/png"
-
-	// Complex functions
 	"math/cmplx"
-
-	// Handeling file operations (save)
 	"os"
+	"time"
 )
 
 // mandelbrot determines the color of a point based on the Mandelbrot set calculation.
@@ -31,10 +28,14 @@ func mandelbrot(c complex128) color.Color {
 func main() {
 	const (
 		// Increase the resolution for more precise rendering.
-		width, height = 20000, 20000
+		width, height = 4096, 4096
 		xMin, xMax    = -2.0, 1.0
 		yMin, yMax    = -1.5, 1.5
+		maxIterations = 1000
 	)
+
+	// Start the timer to measure execution time.
+	start := time.Now()
 
 	// Create a new blank image with the specified resolution.
 	img := image.NewRGBA(image.Rect(0, 0, width, height))
@@ -49,8 +50,13 @@ func main() {
 		}
 	}
 
-	// Create a file to save the image.
-	file, err := os.Create("mandelbrot.png")
+	// Measure the elapsed time.
+	elapsed := time.Since(start)
+	fmt.Printf("Time taken to generate Mandelbrot set: %.2f seconds\n", elapsed.Seconds())
+
+	// Create a file name with size and iteration information.
+	fileName := fmt.Sprintf("mandelbrot_%dx%d_%diter.png", width, height, maxIterations)
+	file, err := os.Create(fileName)
 	if err != nil {
 		panic(err)
 	}
@@ -61,5 +67,5 @@ func main() {
 		panic(err)
 	}
 
-	println("Mandelbrot set image saved as mandelbrot.png")
+	fmt.Printf("Mandelbrot set image saved as %s\n", fileName)
 }
