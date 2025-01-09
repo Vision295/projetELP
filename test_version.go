@@ -13,7 +13,7 @@ import (
 // mandelbrot determines the color of a point based on the Mandelbrot set calculation.
 // It returns a color based on the number of iterations it takes for the sequence to escape.
 func mandelbrot(c complex128) color.Color {
-	const maxIterations = 1000 // Increase the number of iterations for more precision.
+	const maxIterations = 2000 // Increase the number of iterations for more precision.
 	var z complex128
 	for n := 0; n < maxIterations; n++ {
 		if cmplx.Abs(z) > 2 {
@@ -28,10 +28,10 @@ func mandelbrot(c complex128) color.Color {
 func main() {
 	const (
 		// Increase the resolution for more precise rendering.
-		width, height = 10000, 10000
+		width, height = 30000, 30000
 		xMin, xMax    = -2.0, 1.0
 		yMin, yMax    = -1.5, 1.5
-		maxIterations = 1000
+		maxIterations = 2000
 	)
 
 	// Start the timer to measure execution time.
