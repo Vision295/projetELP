@@ -28,7 +28,7 @@ func mandelbrot(c complex128) color.Color {
 func main() {
 	const (
 		// Increase the resolution for more precise rendering.
-		width, height = 4096, 4096
+		width, height = 10000, 10000
 		xMin, xMax    = -2.0, 1.0
 		yMin, yMax    = -1.5, 1.5
 		maxIterations = 1000
