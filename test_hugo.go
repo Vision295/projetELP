@@ -32,6 +32,7 @@ var rangeY = [2]float64{yMin, yMax}
 // It returns a color based on the number of iterations it takes for the sequence to escape.
 func mandelbrot_test(c complex128, nbIteration int) color.Color {
 	var z complex128
+	var x int
 	// todo : tester si nbIteration < MaxIterations
 	for n := 0; n < nbIteration; n++ {
 		if cmplx.Abs(z) > 2 {
