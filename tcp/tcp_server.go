@@ -1,4 +1,4 @@
-package tcp
+package main
 
 import (
 	"bytes"
@@ -29,8 +29,8 @@ func HandleConnection(conn net.Conn, mandelbrot Mandelbrot) {
 	fmt.Println("Mandelbrot data sent to client")
 }
 
-func TcpConnection(mandelbrot Mandelbrot) {
-	ln, err := net.Listen("tcp", ":8080") // Listen on port 8080
+func LaunchServerTCP(mandelbrot Mandelbrot) {
+	ln, err := net.Listen("tcp6", "[fe80::215:5dff:fe77:9ba0/64]:8080") // Listen on port 8080
 	if err != nil {
 		fmt.Println("Error starting server:", err)
 		return
@@ -47,4 +47,11 @@ func TcpConnection(mandelbrot Mandelbrot) {
 
 		go HandleConnection(conn, mandelbrot) // Handle the connection in a new goroutine
 	}
+}
+
+var mandelbrot = NewMandelbrot()
+
+func main() {
+
+	LaunchServerTCP(mandelbrot)
 }

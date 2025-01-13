@@ -1,4 +1,4 @@
-package tcp
+package main
 
 import (
 	"bytes"
@@ -9,7 +9,7 @@ import (
 )
 
 func ConnectToServer(ip string) {
-	conn, err := net.Dial("tcp", ip) // Replace with your server's IP and port
+	conn, err := net.Dial("tcp6", "["+ip+"]"+":8080") // Replace with your server's IP and port
 	if err != nil {
 		fmt.Println("Error connecting to server:", err)
 		return
@@ -38,4 +38,9 @@ func ConnectToServer(ip string) {
 
 	// Use the Mandelbrot data (e.g., display or process it)
 	fmt.Println("Received Mandelbrot matrix:", mandelbrot)
+}
+
+func main() {
+
+	ConnectToServer("fe80::215:5dff:fe77:9ba0/64")
 }
