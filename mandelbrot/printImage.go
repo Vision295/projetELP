@@ -1,7 +1,6 @@
 package mandelbrot
 
 import (
-	"fmt"
 	"image"
 )
 
@@ -11,7 +10,6 @@ func (m *Mandelbrot) PrintOnImage(precision int) error {
 	// Iterate over each pixel in the image.
 	sample := (*m).GenerateSample()
 	for _, v := range sample {
-		fmt.Print(v)
 		mandelbrotRes, err := (*m).ColorConvergence(
 			complex(
 				float64(real(v))/float64(m.Width)*((*m).XMax-XMin)+float64(XMin),  // Map pixel y-coordinate to complex plane.
