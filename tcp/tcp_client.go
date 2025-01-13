@@ -4,11 +4,12 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
+	. "mandelbrot/mandelbrot"
 	"net"
 )
 
-func main() {
-	conn, err := net.Dial("tcp", "192.168.1.100:8080") // Replace with your server's IP and port
+func ConnectToServer(ip string) {
+	conn, err := net.Dial("tcp", ip) // Replace with your server's IP and port
 	if err != nil {
 		fmt.Println("Error connecting to server:", err)
 		return
@@ -36,5 +37,5 @@ func main() {
 	}
 
 	// Use the Mandelbrot data (e.g., display or process it)
-	fmt.Println("Received Mandelbrot matrix:", mandelbrot.Matrix)
+	fmt.Println("Received Mandelbrot matrix:", mandelbrot)
 }

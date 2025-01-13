@@ -4,36 +4,12 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
+	. "mandelbrot/mandelbrot"
 	"net"
 )
 
-func main() {
-	ln, err := net.Listen("tcp", ":8080") // Listen on port 8080
-	if err != nil {
-		fmt.Println("Error starting server:", err)
-		return
-	}
-	defer ln.Close()
-	fmt.Println("Server listening on port 8080")
-
-	for {
-		conn, err := ln.Accept() // Accept a connection
-		if err != nil {
-			fmt.Println("Error accepting connection:", err)
-			continue
-		}
-
-		go handleConnection(conn) // Handle the connection in a new goroutine
-	}
-}
-
-func handleConnection(conn net.Conn) {
+func HandleConnection(conn net.Conn, mandelbrot Mandelbrot) {
 	defer conn.Close()
-
-	// Create a Mandelbrot object and compute the matrix
-	mandelbrot := &Mandelbrot{}
-	mandelbrot.PrintMandelbrot()
-
 	// Encode the Mandelbrot matrix into bytes
 	var buffer bytes.Buffer
 	encoder := gob.NewEncoder(&buffer)
@@ -51,4 +27,24 @@ func handleConnection(conn net.Conn) {
 	}
 
 	fmt.Println("Mandelbrot data sent to client")
+}
+
+func TcpConnection(mandelbrot Mandelbrot) {
+	ln, err := net.Listen("tcp", ":8080") // Listen on port 8080
+	if err != nil {
+		fmt.Println("Error starting server:", err)
+		return
+	}
+	defer ln.Close()
+	fmt.Println("Server listening on port 8080")
+
+	for {
+		conn, err := ln.Accept() // Accept a connection
+		if err != nil {
+			fmt.Println("Error accepting connection:", err)
+			continue
+		}
+
+		go HandleConnection(conn, mandelbrot) // Handle the connection in a new goroutine
+	}
 }
