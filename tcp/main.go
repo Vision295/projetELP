@@ -1,15 +1,13 @@
 package tcp
 
 import (
-	"fmt"
 	. "mandelbrot/mandelbrot"
 )
 
 var mandelbrot Mandelbrot
 
+func main() {
+	TcpConnection(mandelbrot)
 
-
-
-TcpConnection(mandelbrot)
-
-
+	return
+}
