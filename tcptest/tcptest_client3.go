@@ -11,7 +11,7 @@ import (
 
 func main() {
 	// Define the server address (can be a TCP address or Unix socket)
-	serverAddr := "localhost:8080"
+	serverAddr := "172.21.29.196:8080"
 
 	// Dial the server (connect to it)
 	conn, err := net.Dial("tcp", serverAddr)
