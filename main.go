@@ -1,11 +1,12 @@
 package main
 
 import (
-	"image/png"
+	"fmt"
 	. "mandelbrot/mandelbrot"
-	"os"
+	"time"
 )
 
+/*
 var mandelbrot = NewMandelbrot()
 
 func main() {
@@ -27,4 +28,31 @@ func main() {
 	}
 
 	println("Mandelbrot set image saved as mandelbrot.png")
+}
+*/
+
+func main() {
+	// Define image dimensions
+	const width, height = 10000, 10000
+	const numGoRoutines = 1000
+
+	mandelbrot := NewMandelbrot(width, height)
+
+	start := time.Now()
+	err := mandelbrot.PrintOnImage(numGoRoutines)
+	elapsed := time.Since(start)
+
+	if err != nil {
+		fmt.Println("Error generating Mandelbrot image:", err)
+		return
+	}
+
+	// Save the image with a name based on dimensions
+	fileName := fmt.Sprintf("Mandelbrot_image_(%dx%d)_%v_with_%dgoroutines!", width, height, elapsed, numGoRoutines)
+	err = mandelbrot.SaveImage(fileName)
+	if err != nil {
+		fmt.Println("Error saving image:", err)
+	} else {
+		fmt.Printf("Mandelbrot_image_(%dx%d)_%v_with_%dgoroutines!\n", width, height, elapsed, numGoRoutines)
+	}
 }

@@ -1,7 +1,6 @@
 package mandelbrot
 
 import (
-	"fmt"
 	"image/color"
 	"math/cmplx"
 )
@@ -11,10 +10,6 @@ import (
 // It requires a Mandelbrot to get its MaxIterations so that it doesn't exceed
 func (m *Mandelbrot) ColorConvergence(c complex128, nbIteration int) (color.Color, error) {
 	var z complex128
-	if nbIteration > m.MaxIterations {
-		return nil, fmt.Errorf("tryed to iterate %v whereas the maxIterations alowed is %v", nbIteration, MaxIterations)
-	}
-	// todo : tester si nbIteration < MaxIterations
 	for n := 0; n < nbIteration; n++ {
 		if cmplx.Abs(z) > 2 {
 			// Map the escape iteration to a color gradient.
@@ -25,6 +20,7 @@ func (m *Mandelbrot) ColorConvergence(c complex128, nbIteration int) (color.Colo
 	return color.Black, nil // Points in the Mandelbrot set are black.
 }
 
+/*
 func (m *Mandelbrot) GenerateSample() [NMaxPoints]complex128 {
 	var sample [NMaxPoints]complex128
 	// a faire la gestion d'erreurs
@@ -35,3 +31,4 @@ func (m *Mandelbrot) GenerateSample() [NMaxPoints]complex128 {
 	}
 	return sample
 }
+*/

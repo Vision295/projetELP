@@ -1,10 +1,14 @@
 package mandelbrot
 
 import (
+	"fmt"
 	"image"
+	"image/png"
+	"os"
 	"sync"
 )
 
+/*
 func (m *Mandelbrot) PrintOnImage(precision int) error {
 	// Create a new blank image with the specified resolution.
 	(*m).Image = image.NewRGBA(image.Rect(0, 0, int(m.Width), int(m.Height)))
@@ -24,9 +28,10 @@ func (m *Mandelbrot) PrintOnImage(precision int) error {
 	}
 	return nil
 }
+*/
 
 // PrintOnImage generates the Mandelbrot image using parallel processing.
-func (m *Mandelbrot) PrintOnImage(numGoroutines int) error {
+func (m *Mandelbrot) PrintOnImage(numGoroutines, nbIterations int) error {
 	m.Image = image.NewRGBA(image.Rect(0, 0, int(m.Width), int(m.Height)))
 
 	var wg sync.WaitGroup
@@ -48,7 +53,7 @@ func (m *Mandelbrot) PrintOnImage(numGoroutines int) error {
 						float64(j)/float64(m.Width)*(m.XMax-m.XMin)+m.XMin,
 						float64(i)/float64(m.Height)*(m.YMax-m.YMin)+m.YMin,
 					)
-					color := m.ColorConvergence(c)
+					color := ColorConvergence(c, nbIterations)
 					m.Image.Set(int(j), int(i), color)
 				}
 			}
@@ -56,5 +61,21 @@ func (m *Mandelbrot) PrintOnImage(numGoroutines int) error {
 	}
 
 	wg.Wait()
+	return nil
+}
+
+// SaveImage saves the generated Mandelbrot image as a PNG file.
+func (m *Mandelbrot) SaveImage(filePath string) error {
+	file, err := os.Create(filePath)
+	if err != nil {
+		return fmt.Errorf("could not create file: %v", err)
+	}
+	defer file.Close()
+
+	err = png.Encode(file, m.Image)
+	if err != nil {
+		return fmt.Errorf("could not encode image to file: %v", err)
+	}
+
 	return nil
 }
