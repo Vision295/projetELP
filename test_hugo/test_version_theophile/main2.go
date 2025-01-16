@@ -142,7 +142,7 @@ func main() {
 	mandelbrot := NewMandelbrot() // Initialize a new Mandelbrot instance
 
 	// Generate the Mandelbrot image using 4 goroutines and the specified precision
-	err := mandelbrot.PrintOnImage(MaxIterations, 4)
+	err := mandelbrot.PrintOnImage(MaxIterations, 10)
 	if err != nil {
 		fmt.Println("Error generating Mandelbrot image:", err)
 		return
