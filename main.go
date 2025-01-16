@@ -55,7 +55,7 @@ func main() {
 	}
 
 	// Save the image with a name based on dimensions
-	fileName := fmt.Sprintf("Mandelbrot_image_(%dx%d)_%v_with_%dgoroutines.png", width, height, elapsed, numGoRoutines)
+	fileName := fmt.Sprintf("Mandelbrot_image_(%dx%d)_%v_with_%dgoroutines.png.png", width, height, elapsed, numGoRoutines)
 	err = mandelbrot.SaveImage(fileName)
 	if err != nil {
 		fmt.Println("Error saving image:", err)
