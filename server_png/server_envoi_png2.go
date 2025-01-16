@@ -135,16 +135,19 @@ func handleConnection(conn net.Conn) {
 
 			writer.WriteString("Image generation triggered successfully.\n")
 			writer.Flush()
-			err = sendImage(writer)
-			if err != nil {
-				fmt.Println("Error sending image:", err)
-				return
-			}
-			fmt.Println("Image sent successfully.")
+
 		} else {
 			writer.WriteString("Unknown command. Try again.\n")
 			writer.Flush()
 		}
+		err = sendImage(writer)
+		if err != nil {
+			fmt.Println("Error sending image:", err)
+			return
+		} else {
+			fmt.Println("Image sent successfully.")
+		}
+
 	}
 }
 
@@ -167,10 +170,10 @@ func sendImage(writer *bufio.Writer) error {
 
 	writer.Flush()
 	// Delete the image file after sending it
-	err = os.Remove("Mandelbrot.png")
-	if err != nil {
-		return fmt.Errorf("failed to delete image file: %w", err)
-	}
+	//err = os.Remove("Mandelbrot.png")
+	//if err != nil {
+	//	return fmt.Errorf("failed to delete image file: %w", err)
+	//}
 
 	return nil
 }
