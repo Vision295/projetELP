@@ -32,6 +32,5 @@ func handleConnection(conn net.Conn) {
 
 		num1Str, _ = bufio.NewReader(conn).ReadString('\n')
 		num1Str = strings.TrimSpace(num1Str)
-		writer.Flush()
 	}
 }

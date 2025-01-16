@@ -2,11 +2,14 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"net"
 	"os"
 	"strings"
 )
+
+var err error
 
 func main() {
 	serverAddr := "172.21.29.196:8080"
@@ -14,32 +17,24 @@ func main() {
 	conn, _ := net.Dial("tcp", serverAddr)
 	defer conn.Close()
 	fmt.Println("Connected to server", serverAddr)
+	isConnectionUp := false
+	if err != nil {
+		isConnectionUp = true
+	}
+	go readFromServer(conn, isConnectionUp)
 
-	go readFromServer(conn)
-
-	writeToServer(conn)
+	err = writeToServer(conn)
 }
 
-func readFromServer(conn net.Conn) {
+func readFromServer(conn net.Conn, isConnectionUp bool) {
 	reader := bufio.NewReader(conn)
-	for {
+	for isConnectionUp {
 		message, err := reader.ReadString('\n')
-		if err != nil {
-			if err.Error() == "EOF" {
-				// Server closed the connection
-				fmt.Println("Server closed the connection.")
-				return
-			} else {
-				// Handle other errors
-				fmt.Println("Error reading from server:", err)
-			}
-			break
-		}
 		fmt.Println(message, err)
 	}
 }
 
-func writeToServer(conn net.Conn) {
+func writeToServer(conn net.Conn) error {
 	scanner := bufio.NewScanner(os.Stdin)
 	for {
 		fmt.Print("Enter message to send to server: ")
@@ -47,6 +42,9 @@ func writeToServer(conn net.Conn) {
 		userInput := scanner.Text()
 		if strings.TrimSpace(userInput) != "" {
 			conn.Write([]byte(userInput + "\n"))
+		}
+		if userInput == "end" {
+			return errors.New("end")
 		}
 	}
 }
