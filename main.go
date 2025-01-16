@@ -33,9 +33,9 @@ func main() {
 
 func main() {
 	// Define image dimensions
-	const width, height = 10000, 10000
+	const width, height = 3840, 2160
 	const numGoRoutines = 100
-	const nbIteration = 1000
+	const nbIteration = 100
 
 	mandelbrot := NewMandelbrot(width, height)
 	/*
