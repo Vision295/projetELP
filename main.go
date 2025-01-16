@@ -38,6 +38,10 @@ func main() {
 	const nbIteration = 1000
 
 	mandelbrot := NewMandelbrot(width, height)
+	mandelbrot.XMin = -1
+	mandelbrot.XMax = 0.5
+	mandelbrot.YMin = -0.75
+	mandelbrot.YMax = 0.75
 
 	start := time.Now()
 	err := mandelbrot.PrintOnImage(numGoRoutines, nbIteration)
