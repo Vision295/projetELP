@@ -11,15 +11,18 @@ import (
 
 // Configuration for the parameter sweep
 const (
-	OutputFile    = "benchmark_results.csv" // File to store the results
-	ImageWidth    = 3840                    // Fixed width for the image
-	ImageHeight   = 2160                    // Fixed height for the image
-	MinIterations = 10                      // Minimum number of iterations
-	MaxIterations = 2000                    // Maximum number of iterations
-	IterationStep = 40                      // Step size for iterations
-	MinGoroutines = 1                       // Minimum number of goroutines
-	MaxGoroutines = 2000                    // Maximum number of goroutines
-	GoroutineStep = 20                      // Step size for goroutines
+	OutputFile = "benchmark_v2_results.csv" // File to store the results
+
+	ImageWidth  = 3840 // Fixed width for the image
+	ImageHeight = 2160 // Fixed height for the image
+
+	MinIterations = 1    // Minimum number of iterations
+	MaxIterations = 2000 // Maximum number of iterations
+	IterationStep = 20   // Step size for iterations
+
+	MinGoroutines = 1  // Minimum number of goroutines
+	MaxGoroutines = 50 // Maximum number of goroutines
+	GoroutineStep = 1  // Step size for goroutines
 )
 
 func main() {
@@ -31,9 +34,8 @@ func main() {
 	}
 	defer file.Close()
 
-	// Explicitly use a comma delimiter for CSV files (this is default but explicit here)
 	writer := csv.NewWriter(file)
-	writer.Comma = ';' // Ensure comma delimiter
+	writer.Comma = ';' // Set the delimiter to semicolon
 	defer writer.Flush()
 
 	// Write the header row to the CSV file
@@ -48,7 +50,12 @@ func main() {
 		for goroutines := MinGoroutines; goroutines <= MaxGoroutines; goroutines += GoroutineStep {
 			// Run the Mandelbrot program with the current parameters
 			start := time.Now()
-			cmd := exec.Command("go", "run", "main.go", strconv.Itoa(ImageWidth), strconv.Itoa(ImageHeight), strconv.Itoa(iterations), strconv.Itoa(goroutines))
+			cmd := exec.Command("go", "run", "main.go",
+				strconv.Itoa(ImageWidth),
+				strconv.Itoa(ImageHeight),
+				strconv.Itoa(iterations),
+				strconv.Itoa(goroutines),
+			)
 			err := cmd.Run()
 			if err != nil {
 				fmt.Printf("Error running Mandelbrot program: %v\n", err)

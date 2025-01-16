@@ -1,5 +1,5 @@
 % Load data from the CSV file
-data = readtable('benchmark_results.csv');
+data = readtable('benchmark_v2_results.csv');
 
 % Extract columns
 iterations = data.Iterations;  % Number of iterations
