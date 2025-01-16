@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	. "mandelbrot/mandelbrot"
 	"net"
 	"os"
 	"strings"
