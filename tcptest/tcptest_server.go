@@ -9,7 +9,6 @@ import (
 )
 
 func main() {
-	// Create a TCP server that listens on port 8080
 	listener, err := net.Listen("tcp", ":8080")
 	if err != nil {
 		fmt.Println("Error starting server:", err)
