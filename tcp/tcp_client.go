@@ -1,46 +1,88 @@
 package main
 
 import (
-	"bytes"
-	"encoding/gob"
+	"bufio"
 	"fmt"
-	. "mandelbrot/mandelbrot"
+	"io"
+	"log"
 	"net"
+	"os"
+	"strings"
 )
 
-func ConnectToServer(ip string) {
-	conn, err := net.Dial("tcp6", "["+ip+"]"+":8080") // Replace with your server's IP and port
+func main() {
+	// Define the server address (can be a TCP address or Unix socket)
+	serverAddr := "localhost:8080"
+
+	// Dial the server (connect to it)
+	conn, err := net.Dial("tcp", serverAddr)
 	if err != nil {
-		fmt.Println("Error connecting to server:", err)
-		return
+		log.Fatal("Failed to connect to server:", err)
 	}
 	defer conn.Close()
 
-	// Read the response from the server
-	var buffer bytes.Buffer
-	buf := make([]byte, 1024)
-	for {
-		n, err := conn.Read(buf)
-		if err != nil {
-			break
-		}
-		buffer.Write(buf[:n])
-	}
+	// Print a message indicating that we're connected
+	fmt.Println("Connected to server", serverAddr)
 
-	// Decode the received data
-	var mandelbrot Mandelbrot
-	decoder := gob.NewDecoder(&buffer)
-	err = decoder.Decode(&mandelbrot)
+	// Start a goroutine to continuously read from the server
+	go readFromServer(conn)
+
+	// Continuously read user input from the terminal and send it to the server
+	writeToServer(conn)
+	// erreur car il faut attendre le résultat de go readFromServer
+	outFile, err := os.Create("OutputFile.png")
 	if err != nil {
-		fmt.Println("Error decoding data:", err)
-		return
+		log.Fatal("Error creating files", err)
 	}
 
-	// Use the Mandelbrot data (e.g., display or process it)
-	fmt.Println("Received Mandelbrot matrix:", mandelbrot)
+	defer outFile.Close()
+
+	i, err := io.Copy(outFile, conn)
+	if err != nil {
+		log.Fatal("Error initialing files ", err)
+	}
+	fmt.Print(i)
+	fmt.Print("ok")
 }
 
-func main() {
+// Function to read messages from the server continuously
+func readFromServer(conn net.Conn) {
+	reader := bufio.NewReader(conn)
+	for {
+		// Read the incoming data line by line
+		message, err := reader.ReadString('\n')
+		if err != nil {
+			if err.Error() == "EOF" {
+				// Server closed the connection
+				fmt.Println("Server closed the connection.")
+			} else {
+				// Handle other errors
+				fmt.Println("Error reading from server:", err)
+			}
+			break
+		}
 
-	ConnectToServer("fe80::215:5dff:fe77:9ba0/64")
+		// Print the received message from the server
+		fmt.Println("Server says:", message)
+	}
+}
+
+// Function to send messages to the server based on user input
+func writeToServer(conn net.Conn) {
+	scanner := bufio.NewScanner(os.Stdin)
+	for {
+		// Read user input from the terminal
+		fmt.Print("Enter message to send to server: ")
+		scanner.Scan()
+		userInput := scanner.Text()
+
+		// Send the input to the server
+		if strings.TrimSpace(userInput) != "" {
+			_, err := conn.Write([]byte(userInput + "\n"))
+			if err != nil {
+				fmt.Println("Error sending data to server:", err)
+				break
+			}
+		}
+	}
 }

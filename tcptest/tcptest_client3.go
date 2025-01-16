@@ -10,17 +10,13 @@ import (
 )
 
 func main() {
-	// Define the server address (can be a TCP address or Unix socket)
-	serverAddr := "localhost:8080"
+	serverAddr := "172.21.29.196:8080"
 
-	// Dial the server (connect to it)
 	conn, err := net.Dial("tcp", serverAddr)
 	if err != nil {
 		log.Fatal("Failed to connect to server:", err)
 	}
 	defer conn.Close()
-
-	// Print a message indicating that we're connected
 	fmt.Println("Connected to server", serverAddr)
 
 	// Start a goroutine to continuously read from the server
