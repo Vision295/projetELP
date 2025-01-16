@@ -38,10 +38,12 @@ func main() {
 	const nbIteration = 1000
 
 	mandelbrot := NewMandelbrot(width, height)
-	mandelbrot.XMin = -1
-	mandelbrot.XMax = 0.5
-	mandelbrot.YMin = -0.75
-	mandelbrot.YMax = 0.75
+	/*
+		mandelbrot.XMin = -1
+		mandelbrot.XMax = 0.5
+		mandelbrot.YMin = -0.75
+		mandelbrot.YMax = 0.75
+	*/
 
 	start := time.Now()
 	err := mandelbrot.PrintOnImage(numGoRoutines, nbIteration)
@@ -53,7 +55,7 @@ func main() {
 	}
 
 	// Save the image with a name based on dimensions
-	fileName := fmt.Sprintf("Mandelbrot_image_(%dx%d)_%v_with_%dgoroutines!", width, height, elapsed, numGoRoutines)
+	fileName := fmt.Sprintf("Mandelbrot_image_(%dx%d)_%v_with_%dgoroutines.png", width, height, elapsed, numGoRoutines)
 	err = mandelbrot.SaveImage(fileName)
 	if err != nil {
 		fmt.Println("Error saving image:", err)
