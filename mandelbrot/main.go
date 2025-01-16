@@ -4,8 +4,8 @@ import "image"
 
 // Constants for the range of the Mandelbrot set
 const (
-	XMin, XMax = -2.0, 1.0
-	YMin, YMax = -1.5, 1.5
+	XMin, XMax = -1, 0.5
+	YMin, YMax = -0.75, 0.75
 )
 
 type Mandelbrot struct {
