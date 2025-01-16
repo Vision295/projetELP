@@ -112,6 +112,10 @@ func handleConnection(conn net.Conn) {
 			const nbIteration = 1000
 
 			mandelbrot := NewMandelbrot(width, height)
+			mandelbrot.XMin = float64(xmin)
+			mandelbrot.XMax = float64(xmax)
+			mandelbrot.YMin = float64(ymin)
+			mandelbrot.YMax = float64(ymax)
 
 			err := mandelbrot.PrintOnImage(numGoRoutines, nbIteration)
 
