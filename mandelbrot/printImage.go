@@ -53,7 +53,7 @@ func (m *Mandelbrot) PrintOnImage(numGoroutines, nbIterations int) error {
 						float64(j)/float64(m.Width)*(m.XMax-m.XMin)+m.XMin,
 						float64(i)/float64(m.Height)*(m.YMax-m.YMin)+m.YMin,
 					)
-					color := ColorConvergence(c, nbIterations)
+					color, _ := m.ColorConvergence(c, nbIterations)
 					m.Image.Set(int(j), int(i), color)
 				}
 			}

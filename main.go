@@ -34,12 +34,13 @@ func main() {
 func main() {
 	// Define image dimensions
 	const width, height = 10000, 10000
-	const numGoRoutines = 1000
+	const numGoRoutines = 100
+	const nbIteration = 1000
 
 	mandelbrot := NewMandelbrot(width, height)
 
 	start := time.Now()
-	err := mandelbrot.PrintOnImage(numGoRoutines)
+	err := mandelbrot.PrintOnImage(numGoRoutines, nbIteration)
 	elapsed := time.Since(start)
 
 	if err != nil {
