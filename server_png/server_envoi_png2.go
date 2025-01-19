@@ -169,11 +169,11 @@ func sendImage(writer *bufio.Writer) error {
 	}
 
 	writer.Flush()
-	// Delete the image file after sending it
-	//err = os.Remove("Mandelbrot.png")
-	//if err != nil {
-	//	return fmt.Errorf("failed to delete image file: %w", err)
-	//}
+	 Delete the image file after sending it
+	err = os.Remove("Mandelbrot.png")
+	if err != nil {
+		return fmt.Errorf("failed to delete image file: %w", err)
+	}
 
 	return nil
 }
