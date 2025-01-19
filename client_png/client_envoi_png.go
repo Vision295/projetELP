@@ -6,7 +6,6 @@ import (
 	"io"
 	"net"
 	"os"
-	"strconv"
 	"strings"
 )
 
@@ -51,49 +50,23 @@ func readFromServer(conn net.Conn) {
 }
 
 func saveImage(reader *bufio.Reader) {
-	// Read the "START_IMAGE" line with the size
-	header, err := reader.ReadString('\n')
-	if err != nil {
-		fmt.Println("Error reading image header:", err)
-		return
-	}
-
-	// Parse the file size
-	parts := strings.Fields(header)
-	if len(parts) != 2 || parts[0] != "START_IMAGE" {
-		fmt.Println("Invalid START_IMAGE header:", header)
-		return
-	}
-
-	fileSize, err := strconv.ParseInt(parts[1], 10, 64)
-	if err != nil {
-		fmt.Println("Invalid file size:", parts[1])
-		return
-	}
-
-	// Create the output file
-	file, err := os.Create("received_image.png")
+	file, err := os.Create("received_image.png") // File to save the received image
 	if err != nil {
 		fmt.Println("Error creating file:", err)
 		return
 	}
 	defer file.Close()
 
-	// Read exactly `fileSize` bytes for the image
-	_, err = io.CopyN(file, reader, fileSize)
+	// Read binary data from the server and save it to the file
+	_, err = io.Copy(file, reader)
 	if err != nil {
 		fmt.Println("Error saving image:", err)
 		return
 	}
 
-	// Read the "END_IMAGE" marker (optional if not used)
-	endMarker, _ := reader.ReadString('\n')
-	if strings.TrimSpace(endMarker) != "END_IMAGE" {
-		fmt.Println("Warning: Missing END_IMAGE marker.")
-	}
-
 	fmt.Println("Image received and saved as 'received_image.png'.")
 }
+
 func writeToServer(conn net.Conn) {
 	scanner := bufio.NewScanner(os.Stdin)
 
