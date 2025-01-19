@@ -112,6 +112,10 @@ func handleConnection(conn net.Conn) {
 			const nbIteration = 1000
 
 			mandelbrot := NewMandelbrot(width, height)
+			mandelbrot.XMin = float64(xmin)
+			mandelbrot.XMax = float64(xmax)
+			mandelbrot.YMin = float64(ymin)
+			mandelbrot.YMax = float64(ymax)
 
 			err := mandelbrot.PrintOnImage(numGoRoutines, nbIteration)
 
@@ -131,16 +135,19 @@ func handleConnection(conn net.Conn) {
 
 			writer.WriteString("Image generation triggered successfully.\n")
 			writer.Flush()
-			err = sendImage(writer)
-			if err != nil {
-				fmt.Println("Error sending image:", err)
-				return
-			}
-			fmt.Println("Image sent successfully.")
+
 		} else {
 			writer.WriteString("Unknown command. Try again.\n")
 			writer.Flush()
 		}
+		err = sendImage(writer)
+		if err != nil {
+			fmt.Println("Error sending image:", err)
+			return
+		} else {
+			fmt.Println("Image sent successfully.")
+		}
+
 	}
 }
 func sendImage(writer *bufio.Writer) error {
