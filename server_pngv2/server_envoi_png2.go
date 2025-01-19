@@ -135,37 +135,28 @@ func handleConnection(conn net.Conn) {
 
 			writer.WriteString("Image generation triggered successfully.\n")
 			writer.Flush()
-
+			err = sendImage(writer)
+			if err != nil {
+				fmt.Println("Error sending image:", err)
+				return
+			}
+			fmt.Println("Image sent successfully.")
 		} else {
 			writer.WriteString("Unknown command. Try again.\n")
 			writer.Flush()
 		}
-		err = sendImage(writer)
-		if err != nil {
-			fmt.Println("Error sending image:", err)
-			return
-		} else {
-			fmt.Println("Image sent successfully.")
-		}
-
 	}
 }
+
 func sendImage(writer *bufio.Writer) error {
-	imageFile, err := os.Open("Mandelbrot.png")
+	imageFile, err := os.Open("Mandelbrot.png") // Replace with the path to your PNG file
 	if err != nil {
 		return fmt.Errorf("failed to open image file: %w", err)
 	}
 	defer imageFile.Close()
 
-	// Get file size
-	fileInfo, err := imageFile.Stat()
-	if err != nil {
-		return fmt.Errorf("failed to get file info: %w", err)
-	}
-	fileSize := fileInfo.Size()
-
-	// Send "START_IMAGE" and the file size
-	writer.WriteString(fmt.Sprintf("START_IMAGE %d\n", fileSize))
+	// Inform the client that binary data is being sent
+	writer.WriteString("START_IMAGE\n")
 	writer.Flush()
 
 	// Send the image file as binary data
@@ -174,10 +165,7 @@ func sendImage(writer *bufio.Writer) error {
 		return fmt.Errorf("failed to send image file: %w", err)
 	}
 
-	// Send the end-of-image marker (optional if size is used)
-	writer.WriteString("END_IMAGE\n")
 	writer.Flush()
-
 	// Delete the image file after sending it
 	err = os.Remove("Mandelbrot.png")
 	if err != nil {
