@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"net"
+	"os"
 )
 
 func readFromServer() error {
@@ -15,6 +16,7 @@ func readFromServer() error {
 		return err
 	}
 
+	file, _ := os.Create("mandelbrot_.png")
 	defer conn.Close()
 	buf := new(bytes.Buffer)
 	for {
@@ -27,7 +29,7 @@ func readFromServer() error {
 			}
 			log.Fatal(err)
 		}
-		n, err := io.CopyN(buf, conn, size)
+		n, err := io.CopyN(file, conn, size)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -36,6 +38,7 @@ func readFromServer() error {
 		fmt.Printf("recieved %d bytes over the network \n", n)
 		buf.Reset()
 	}
+
 }
 
 func main() {
