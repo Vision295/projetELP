@@ -9,26 +9,12 @@ import (
 	"net"
 )
 
-type FileServer struct{}
-
-func (fs *FileServer) start() {
-
-	// ln is a TCP net.Listener it can listen to the connection of port 3000
-	ln, err := net.Listen("tcp", ":3000")
+func readFromServer() error {
+	conn, err := net.Dial("tcp", ":3000")
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
-	for {
-		conn, err := ln.Accept()
-		if err != nil {
-			log.Fatal(err)
-		}
-		go fs.readLoop(conn)
-	}
-}
-
-func (fs *FileServer) readLoop(conn net.Conn) {
 	defer conn.Close()
 	buf := new(bytes.Buffer)
 	for {
@@ -36,8 +22,8 @@ func (fs *FileServer) readLoop(conn net.Conn) {
 		err := binary.Read(conn, binary.LittleEndian, &size)
 		if err != nil {
 			if err == io.EOF {
-				fmt.Println("Connection closed by client.")
-				return
+				fmt.Println("Connection closed by server.")
+				return nil
 			}
 			log.Fatal(err)
 		}
@@ -53,7 +39,5 @@ func (fs *FileServer) readLoop(conn net.Conn) {
 }
 
 func main() {
-
-	server := &FileServer{}
-	server.start()
+	readFromServer()
 }
