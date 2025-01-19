@@ -159,11 +159,28 @@ func sendImage(writer *bufio.Writer) error {
 	writer.WriteString("START_IMAGE\n")
 	writer.Flush()
 
-	// Send the image file as binary data
-	_, err = io.Copy(writer, imageFile)
-	if err != nil {
-		return fmt.Errorf("failed to send image file: %w", err)
+	const bufferSize = 1024 // Send in 1KB chunks
+	for {
+		// Copy up to bufferSize bytes at a time
+		n, err := io.CopyN(writer, imageFile, bufferSize)
+		fmt.Println("reached checkpoing")
+
+		if err != nil && err != io.EOF {
+			return fmt.Errorf("failed to send image file: %w", err)
+		}
+
+		writer.Flush()
+
+		// Stop if end of file is reached
+		if n == 0 || err == io.EOF {
+			break
+		}
 	}
+	// Send the image file as binary data
+	//_, err = io.Copy(writer, imageFile)
+	//if err != nil {
+	//	return fmt.Errorf("failed to send image file: %w", err)
+	//}
 
 	writer.Flush()
 	// Delete the image file after sending it
