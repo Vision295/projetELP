@@ -2,8 +2,8 @@ package main
 
 import (
 	"bufio"
+	"encoding/base64"
 	"fmt"
-	"io"
 	. "mandelbrot/mandelbrot"
 	"net"
 	"os"
@@ -135,45 +135,71 @@ func handleConnection(conn net.Conn) {
 
 			writer.WriteString("Image generation triggered successfully.\n")
 			writer.Flush()
-
+			err = sendImage(writer)
+			if err != nil {
+				fmt.Println("Error sending image:", err)
+				return
+			}
+			fmt.Println("Image sent successfully.")
 		} else {
 			writer.WriteString("Unknown command. Try again.\n")
 			writer.Flush()
 		}
-		err = sendImage(writer)
-		if err != nil {
-			fmt.Println("Error sending image:", err)
-			return
-		} else {
-			fmt.Println("Image sent successfully.")
-		}
-
 	}
 }
 
 func sendImage(writer *bufio.Writer) error {
-	imageFile, err := os.Open("Mandelbrot.png") // Replace with the path to your PNG file
+	// Read the image file
+	imageData, err := os.ReadFile("Mandelbrot.png")
 	if err != nil {
-		return fmt.Errorf("failed to open image file: %w", err)
-	}
-	defer imageFile.Close()
-
-	// Inform the client that binary data is being sent
-	writer.WriteString("START_IMAGE\n")
-	writer.Flush()
-
-	// Send the image file as binary data
-	_, err = io.Copy(writer, imageFile)
-	if err != nil {
-		return fmt.Errorf("failed to send image file: %w", err)
+		return fmt.Errorf("failed to read image file: %w", err)
 	}
 
+	// Convert to base64
+	base64Data := base64.StdEncoding.EncodeToString(imageData)
+
+	// Send the image size first
+	sizeMsg := fmt.Sprintf("IMAGE_SIZE:%d\n", len(base64Data))
+	_, err = writer.WriteString(sizeMsg)
+	if err != nil {
+		return fmt.Errorf("failed to send size: %w", err)
+	}
 	writer.Flush()
-	// Delete the image file after sending it
-	//err = os.Remove("Mandelbrot.png")
-	//if err != nil {
-	//	return fmt.Errorf("failed to delete image file: %w", err)
-	//}
+
+	// Send the actual image data
+	_, err = writer.WriteString("START_IMAGE\n")
+	if err != nil {
+		return fmt.Errorf("failed to send start marker: %w", err)
+	}
+	writer.Flush()
+
+	// Send the base64 data in chunks
+	chunkSize := 1024
+	for i := 0; i < len(base64Data); i += chunkSize {
+		end := i + chunkSize
+		if end > len(base64Data) {
+			end = len(base64Data)
+		}
+
+		_, err := writer.WriteString(base64Data[i:end])
+		if err != nil {
+			return fmt.Errorf("failed to send data chunk: %w", err)
+		}
+		writer.Flush()
+	}
+
+	// Send end marker
+	_, err = writer.WriteString("\nEND_IMAGE\n")
+	if err != nil {
+		return fmt.Errorf("failed to send end marker: %w", err)
+	}
+	writer.Flush()
+
+	// Delete the image file
+	err = os.Remove("Mandelbrot.png")
+	if err != nil {
+		return fmt.Errorf("failed to delete image file: %w", err)
+	}
 
 	return nil
 }
