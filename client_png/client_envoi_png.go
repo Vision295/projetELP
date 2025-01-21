@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"log"
 	"net"
 	"os"
 	"strings"
@@ -14,8 +15,7 @@ func main() {
 
 	conn, err := net.Dial("tcp", serverAddr)
 	if err != nil {
-		fmt.Println("Error connecting to server:", err)
-		return
+		log.Fatal("Error connecting to server:", err)
 	}
 	defer conn.Close()
 	fmt.Println("Connected to server", serverAddr)
@@ -32,11 +32,9 @@ func readFromServer(conn net.Conn) {
 		message, err := reader.ReadString('\n')
 		if err != nil {
 			if err == io.EOF {
-				fmt.Println("Server closed the connection.")
-				return
+				log.Fatal("Server closed the connection.")
 			}
-			fmt.Println("Error reading from server:", err)
-			return
+			log.Fatal("Error reading from server:", err)
 		}
 
 		message = strings.TrimSpace(message)
@@ -52,16 +50,14 @@ func readFromServer(conn net.Conn) {
 func saveImage(reader *bufio.Reader) {
 	file, err := os.Create("received_image.png") // File to save the received image
 	if err != nil {
-		fmt.Println("Error creating file:", err)
-		return
+		log.Fatal("Error creating file:", err)
 	}
 	defer file.Close()
 
 	// Read binary data from the server and save it to the file
 	_, err = io.Copy(file, reader)
 	if err != nil {
-		fmt.Println("Error saving image:", err)
-		return
+		log.Fatal("Error saving image:", err)
 	}
 
 	fmt.Println("Image received and saved as 'received_image.png'.")
@@ -78,8 +74,7 @@ func writeToServer(conn net.Conn) {
 		if strings.TrimSpace(userInput) != "" {
 			_, err := conn.Write([]byte(userInput + "\n"))
 			if err != nil {
-				fmt.Println("Error sending to server:", err)
-				return
+				log.Fatal("Error sending to server:", err)
 			}
 		}
 
