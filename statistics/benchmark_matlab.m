@@ -1,63 +1,49 @@
 % Load the CSV file
-data = readtable('benchmark_v2_results.csv', 'Delimiter', ';');
+data = readtable('benchmark_v2_results.csv');
 
-% Extract columns from the table
-iterations = data.Iterations;
-goroutines = data.Goroutines;
-executionTime = data.ExecutionTime_ms_;
-ssimScore = data.SSIM_Score;
+% Extract data from the table
+Iterations = data.Iterations;
+Goroutines = data.Goroutines;
+ExecutionTime = data.ExecutionTime_ms_;
+Quality = data.Quality;
 
-% Ensure data types are correct
-iterations = double(iterations);
-goroutines = double(goroutines);
-executionTime = double(executionTime);
-ssimScore = double(ssimScore);
+% Compute ExecutionTime * Quality
+ExecTime_Quality = ExecutionTime .* Quality;
 
-% Unique values for iterations and goroutines
-uniqueIterations = unique(iterations);
-uniqueGoroutines = unique(goroutines);
+% Reshape the data for 3D plots
+[X, Y] = meshgrid(unique(Iterations), unique(Goroutines));
+Z1 = griddata(Iterations, Goroutines, ExecutionTime, X, Y);
+Z2 = griddata(Iterations, Goroutines, Quality, X, Y);
+Z3 = griddata(Iterations, Goroutines, ExecTime_Quality, X, Y);
 
-% Create a grid for iterations and goroutines
-[iterGrid, goroutinesGrid] = meshgrid(uniqueIterations, uniqueGoroutines);
-
-% Reshape executionTime and ssimScore into matrices for surf plotting
-executionTimeMatrix = reshape(executionTime, length(uniqueGoroutines), length(uniqueIterations));
-ssimScoreMatrix = reshape(ssimScore, length(uniqueGoroutines), length(uniqueIterations));
-timeQualityMatrix = executionTimeMatrix .* ssimScoreMatrix;
-
-% Plot 1: Execution Time
+% Plot Execution Time vs Iterations and Goroutines
 figure;
-surf(iterGrid, goroutinesGrid, executionTimeMatrix);
-xlabel('Number of Iterations');
-ylabel('Number of Goroutines');
+surf(X, Y, Z1);
+xlabel('Iterations');
+ylabel('Goroutines');
 zlabel('Execution Time (ms)');
 title('Execution Time');
-colorbar;
-view(3);
+savefig('ExecutionTime');
 
-% Plot 2: SSIM Score
+% Plot Quality vs Iterations and Goroutines
 figure;
-surf(iterGrid, goroutinesGrid, ssimScoreMatrix);
-xlabel('Number of Iterations');
-ylabel('Number of Goroutines');
-zlabel('Image Quality (SSIM Score)');
-title('Image Quality');
-colorbar;
-view(3);
+surf(X, Y, Z2);
+xlabel('Iterations');
+ylabel('Goroutines');
+zlabel('Quality');
+title('Quality');
+savefig('Quality');
 
-% Plot 3: Time * Quality
+% Plot Execution Time * Quality vs Iterations and Goroutines
 figure;
-surf(iterGrid, goroutinesGrid, timeQualityMatrix);
-xlabel('Number of Iterations');
-ylabel('Number of Goroutines');
-zlabel('Execution Time * Image Quality');
-title('Execution Time * Image Quality');
-colorbar;
-view(3);
+surf(X, Y, Z3);
+xlabel('Iterations');
+ylabel('Goroutines');
+zlabel('Execution Time * Quality');
+title('Execution Time * Quality');
+savefig('ExecTime_Quality');
 
-% Save figures to disk
-saveas(1, 'execution_time_vs_iterations_goroutines.png');
-saveas(2, 'image_quality_vs_iterations_goroutines.png');
-saveas(3, 'time_quality_vs_iterations_goroutines.png');
-disp('Plots saved as PNG files.');
+disp('Figures saved as MATLAB .fig files.');
+
+
 
