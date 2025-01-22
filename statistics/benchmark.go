@@ -101,7 +101,7 @@ func main() {
 	defer writer.Flush()
 
 	// Write the header row to the CSV file
-	err = writer.Write([]string{"Iterations", "Goroutines", "ExecutionTime(ms)", "SSIM_Score"})
+	err = writer.Write([]string{"Iterations", "Goroutines", "ExecutionTime(ms)", "Quality"})
 	if err != nil {
 		fmt.Printf("Error writing header to CSV: %v\n", err)
 		return
@@ -111,7 +111,7 @@ func main() {
 	for iterations := MinIterations; iterations <= MaxIterations; iterations += IterationStep {
 		for goroutines := MinGoroutines; goroutines <= MaxGoroutines; goroutines += GoroutineStep {
 			var totalExecutionTime int64
-			var totalSSIM float64
+			var totalScore float64
 
 			// Run the test 10 times and average the results
 			for i := 0; i < 10; i++ {
@@ -131,25 +131,25 @@ func main() {
 				totalExecutionTime += executionTime
 
 				// Compare the generated image with the "perfect" image and calculate SSIM
-				ssimScore, err := compareImages(ImageWidth, ImageHeight, iterations, goroutines, "Perfect_Mandelbrot.png")
+				score, err := compareImages(ImageWidth, ImageHeight, iterations, goroutines, "Perfect_Mandelbrot.png")
 				// println(ssimScore)
 				if err != nil {
 					fmt.Println("Error comparing images:", err)
 					continue
 				}
-				totalSSIM += ssimScore
+				totalScore += score
 			}
 
 			// Calculate the average execution time and SSIM
 			avgExecutionTime := totalExecutionTime / 10
-			avgSSIM := totalSSIM / 10
+			avgScore := totalScore / 10
 
 			// Write the result to the CSV file
 			err = writer.Write([]string{
 				strconv.Itoa(iterations),
 				strconv.Itoa(goroutines),
 				strconv.FormatInt(avgExecutionTime, 10),
-				fmt.Sprintf("%.2f", avgSSIM),
+				fmt.Sprintf("%.2f", avgScore),
 			})
 			if err != nil {
 				fmt.Printf("Error writing result to CSV: %v\n", err)
@@ -157,7 +157,7 @@ func main() {
 			}
 
 			// Print progress to the console
-			fmt.Printf("Completed: Iterations=%d, Goroutines=%d, AvgExecutionTime=%dms, AvgSSIM=%.2f\n", iterations, goroutines, avgExecutionTime, avgSSIM)
+			fmt.Printf("Completed: Iterations=%d, Goroutines=%d, AvgExecutionTime=%dms, AvgSSIM=%.2f\n", iterations, goroutines, avgExecutionTime, avgScore)
 		}
 	}
 
