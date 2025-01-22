@@ -10,6 +10,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 )
 
 func main() {
@@ -22,18 +23,23 @@ func main() {
 	defer listener.Close()
 	fmt.Println("Server is listening on port 8080...")
 
+	var wg sync.WaitGroup
+
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
-			log.Fatal("Error accepting connection:", err)
+			fmt.Println("Error accepting connection:", err)
+			return
 		}
 
+		wg.Add(1)
 		fmt.Printf("New client connected: %s\n", conn.RemoteAddr().String())
-		go handleConnection(conn)
+		go handleConnection(conn, &wg)
 	}
 }
 
-func handleConnection(conn net.Conn) {
+func handleConnection(conn net.Conn, wg *sync.WaitGroup) {
+	defer wg.Done()
 	defer conn.Close()
 
 	reader := bufio.NewReader(conn)
@@ -45,13 +51,15 @@ func handleConnection(conn net.Conn) {
 
 		command, err := reader.ReadString('\n')
 		if err != nil {
-			log.Fatal("Error reading from client:", err)
+			fmt.Print("Error reading from client:", err)
+			return
 		}
 
 		command = strings.TrimSpace(command)
 
 		if command == "end" {
-			log.Fatal("Client disconnected.")
+			fmt.Print("Client disconnected.")
+			return
 		} else if command == "send image" {
 			// Collect parameters
 			var xmin, xmax, ymin, ymax float32
@@ -119,7 +127,8 @@ func handleConnection(conn net.Conn) {
 			err := mandelbrot.PrintOnImage(numGoRoutines, nbIteration)
 
 			if err != nil {
-				log.Fatal("Error generating Mandelbrot image:", err)
+				fmt.Print("Error generating Mandelbrot image:", err)
+				return
 			}
 
 			// Save the image with a name based on dimensions
@@ -135,7 +144,8 @@ func handleConnection(conn net.Conn) {
 			writer.Flush()
 			err = sendImage(writer)
 			if err != nil {
-				log.Fatal("Error sending image:", err)
+				fmt.Print("Error sending image:", err)
+				return
 			}
 			fmt.Println("Image sent successfully.")
 		} else {

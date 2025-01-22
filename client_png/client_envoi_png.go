@@ -16,7 +16,8 @@ func main() {
 	serverAddr := "localhost:8080"
 	conn, err := net.Dial("tcp", serverAddr)
 	if err != nil {
-		log.Fatal("Error connecting to server:", err)
+		fmt.Print("Error connecting to server:", err)
+		return
 	}
 	defer conn.Close()
 
@@ -31,9 +32,11 @@ func readFromServer(conn net.Conn) {
 		message, err := reader.ReadString('\n')
 		if err != nil {
 			if err == io.EOF {
-				log.Fatal("Server closed the connection.")
+				fmt.Print("Server closed the connection.")
+				return
 			}
-			log.Fatal("Error reading from server:", err)
+			fmt.Print("Error reading from server:", err)
+			return
 		}
 		message = strings.TrimSpace(message)
 
@@ -89,7 +92,8 @@ func receiveImage(reader *bufio.Reader, size int) {
 	// Save the image
 	err = os.WriteFile("received_image.png", imageData, 0644)
 	if err != nil {
-		log.Fatal("Error saving image:", err)
+		fmt.Print("Error saving image:", err)
+		return
 	}
 
 	fmt.Println("Image received and saved as 'received_image.png'")
@@ -104,7 +108,8 @@ func writeToServer(conn net.Conn) {
 		if strings.TrimSpace(userInput) != "" {
 			_, err := conn.Write([]byte(userInput + "\n"))
 			if err != nil {
-				log.Fatal("Error sending to server:", err)
+				fmt.Print("Error sending to server:", err)
+				return
 			}
 		}
 		if userInput == "end" {
