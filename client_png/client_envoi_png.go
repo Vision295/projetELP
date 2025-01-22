@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io"
+	"log"
 	"net"
 	"os"
 	"strconv"
@@ -15,8 +16,7 @@ func main() {
 	serverAddr := "localhost:8080"
 	conn, err := net.Dial("tcp", serverAddr)
 	if err != nil {
-		fmt.Println("Error connecting to server:", err)
-		return
+		log.Fatal("Error connecting to server:", err)
 	}
 	defer conn.Close()
 
@@ -31,11 +31,9 @@ func readFromServer(conn net.Conn) {
 		message, err := reader.ReadString('\n')
 		if err != nil {
 			if err == io.EOF {
-				fmt.Println("Server closed the connection.")
-				return
+				log.Fatal("Server closed the connection.")
 			}
-			fmt.Println("Error reading from server:", err)
-			return
+			log.Fatal("Error reading from server:", err)
 		}
 		message = strings.TrimSpace(message)
 
@@ -83,6 +81,7 @@ func receiveImage(reader *bufio.Reader, size int) {
 	// Decode base64 data
 	imageData, err := base64.StdEncoding.DecodeString(base64Data.String())
 	if err != nil {
+		log.Fatal("Error creating file:", err)
 		fmt.Println("Error decoding image data:", err)
 		return
 	}
@@ -90,8 +89,7 @@ func receiveImage(reader *bufio.Reader, size int) {
 	// Save the image
 	err = os.WriteFile("received_image.png", imageData, 0644)
 	if err != nil {
-		fmt.Println("Error saving image:", err)
-		return
+		log.Fatal("Error saving image:", err)
 	}
 
 	fmt.Println("Image received and saved as 'received_image.png'")
@@ -106,8 +104,7 @@ func writeToServer(conn net.Conn) {
 		if strings.TrimSpace(userInput) != "" {
 			_, err := conn.Write([]byte(userInput + "\n"))
 			if err != nil {
-				fmt.Println("Error sending to server:", err)
-				return
+				log.Fatal("Error sending to server:", err)
 			}
 		}
 		if userInput == "end" {

@@ -45,23 +45,26 @@ func (m *Mandelbrot) PrintOnImage(numGoroutines, nbIterations int) error {
 		}
 
 		wg.Add(1)
-		go func(start, end uint32) {
-			defer wg.Done()
-			for i := start; i < end; i++ {
-				for j := uint32(0); j < m.Width; j++ {
-					c := complex(
-						float64(j)/float64(m.Width)*(m.XMax-m.XMin)+m.XMin,
-						float64(i)/float64(m.Height)*(m.YMax-m.YMin)+m.YMin,
-					)
-					color, _ := m.ColorConvergence(c, nbIterations)
-					m.Image.Set(int(j), int(i), color)
-				}
-			}
-		}(startRow, endRow)
+		go m.ComputeOnSample(&wg, nbIterations, startRow, endRow)
+
 	}
 
 	wg.Wait()
 	return nil
+}
+
+func (m *Mandelbrot) ComputeOnSample(wg *sync.WaitGroup, nbIterations int, start, end uint32) {
+	defer wg.Done()
+	for i := start; i < end; i++ {
+		for j := uint32(0); j < m.Width; j++ {
+			c := complex(
+				float64(j)/float64(m.Width)*(m.XMax-m.XMin)+m.XMin,
+				float64(i)/float64(m.Height)*(m.YMax-m.YMin)+m.YMin,
+			)
+			color, _ := m.ColorConvergence(c, nbIterations)
+			m.Image.Set(int(j), int(i), color)
+		}
+	}
 }
 
 // SaveImage saves the generated Mandelbrot image as a PNG file.
