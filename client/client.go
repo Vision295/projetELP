@@ -13,7 +13,9 @@ import (
 )
 
 func main() {
+
 	serverAddr := "localhost:8080"
+	// Dial connection = initiates a connection can send data !
 	conn, err := net.Dial("tcp", serverAddr)
 	if err != nil {
 		fmt.Print("Error connecting to server:", err)
