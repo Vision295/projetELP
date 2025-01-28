@@ -5304,7 +5304,10 @@ var $elm$svg$Svg$Attributes$width = _VirtualDom_attribute('width');
 var $elm$svg$Svg$Attributes$x = _VirtualDom_attribute('x');
 var $elm$svg$Svg$Attributes$y = _VirtualDom_attribute('y');
 var $author$project$LearnHtml$view = function (model) {
-	return A2(
+	return _Utils_eq(
+		model.words,
+		_List_fromArray(
+			['circle'])) ? A2(
 		$elm$html$Html$div,
 		_List_Nil,
 		_List_fromArray(
@@ -5367,6 +5370,49 @@ var $author$project$LearnHtml$view = function (model) {
 							[
 								$elm$html$Html$text('Send')
 							]))
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text('Words found: '),
+						$elm$html$Html$text(
+						$elm$core$String$fromInt(
+							$elm$core$List$length(model.words)))
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text('Words: '),
+						$elm$html$Html$text(
+						A2($elm$core$String$join, ', ', model.words))
+					]))
+			])) : A2(
+		$elm$html$Html$div,
+		_List_Nil,
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$input,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$placeholder('Enter some text'),
+						$elm$html$Html$Attributes$value(model.inputText),
+						$elm$html$Html$Events$onInput($author$project$LearnHtml$UpdateText)
+					]),
+				_List_Nil),
+				A2(
+				$elm$html$Html$button,
+				_List_fromArray(
+					[
+						$elm$html$Html$Events$onClick($author$project$LearnHtml$ParseWords)
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('Send')
 					])),
 				A2(
 				$elm$html$Html$div,
