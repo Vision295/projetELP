@@ -1,27 +1,77 @@
 module Main exposing (main)
 
 import Browser
-import Html exposing (Html, div, h1, text)
+import Html exposing (Html, div, input, svg, text, button)
+import Html.Events exposing (onClick, onInput)
+import Svg exposing (Svg)
+import TcTurtleParser exposing (read)
+import TcTurtleDraw exposing (display)
 
--- The model (simple unit type in this case)
-type alias Model = ()
+-- MODEL
 
--- Initialize the model
+type alias Model =
+    { input : String
+    , parsedProgram : Result String Program
+    }
+
+type alias Program =
+    List Instruction
+
+type Instruction
+    = Forward Float
+    | Left Float
+    | Right Float
+    | Repeat Int (List Instruction)
+
 init : Model
-init = ()
+init =
+    { input = ""
+    , parsedProgram = Err "No program yet"
+    }
 
--- The view of the page web
-view : Model -> Html msg
+
+-- UPDATE
+
+type Msg
+    = UpdateInput String
+    | ParseInput
+
+update : Msg -> Model -> Model
+update msg model =
+    case msg of
+        UpdateInput newInput ->
+            { model | input = newInput }
+
+        ParseInput ->
+            let
+                parsed =
+                    read model.input
+            in
+            { model | parsedProgram = parsed }
+
+
+-- VIEW
+
+view : Model -> Html Msg
 view model =
     div []
-        [ h1 [] [ text "Bienvenue dans Elm!" ]
-        , div [] [ text "Ceci est une page web basique." ]
+        [ div []
+            [ input [ onInput UpdateInput, Html.Attributes.placeholder "Enter TcTurtle program" ] []
+            , button [ onClick ParseInput ] [ text "Parse & Draw" ]
+            ]
+        , div []
+            [ case model.parsedProgram of
+                Err error ->
+                    text ("Error: " ++ error)
+
+                Ok program ->
+                    svg [ Svg.Attributes.viewBox "0 0 500 500", Svg.Attributes.width "500", Svg.Attributes.height "500" ]
+                        (display program)
+            ]
         ]
 
--- The update function (does nothing for now)
-update : msg -> Model -> Model
-update msg model = model
 
--- Configure the program Elm
+-- MAIN
+
 main =
     Browser.sandbox { init = init, update = update, view = view }
