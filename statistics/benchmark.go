@@ -13,7 +13,7 @@ import (
 
 // Configuration for the parameter sweep
 const (
-	OutputFile = "benchmark_v3_results.csv" // File to store the results
+	OutputFile = "benchmark_v4_results.csv" // File to store the results
 
 	ImageWidth  = 3840 // Fixed width for the image
 	ImageHeight = 2160 // Fixed height for the image
@@ -22,9 +22,9 @@ const (
 	MaxIterations = 1000 // Maximum number of iterations
 	IterationStep = 20   // Step size for iterations
 
-	MinGoroutines = 30 // Minimum number of goroutines
-	MaxGoroutines = 60 // Maximum number of goroutines
-	GoroutineStep = 1  // Step size for goroutines
+	MinGoroutines = 60  // Minimum number of goroutines
+	MaxGoroutines = 100 // Maximum number of goroutines
+	GoroutineStep = 1   // Step size for goroutines
 )
 
 func compareImages(width, height, nbIterations, numGoRoutines int, perfectImage string) (float64, error) {

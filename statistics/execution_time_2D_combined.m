@@ -1,9 +1,10 @@
 % Load the two data files
-data1 = readtable("C:\Users\User\3TC\Projets\Période 2\ELP\projetELP\statistics\v2\benchmark_v2_results.csv"); % Replace with your first data file path
-data2 = readtable("C:\Users\User\3TC\Projets\Période 2\ELP\projetELP\statistics\benchmark_v3_results.csv"); % Replace with your second data file path
+data1 = readtable("C:\Users\User\3TC\Projets\Période 2\ELP\projetELP\statistics\v2\benchmark_v2_results.csv");
+data2 = readtable("C:\Users\User\3TC\Projets\Période 2\ELP\projetELP\statistics\benchmark_v3_results.csv");
+data3 = readtable("C:\Users\User\3TC\Projets\Période 2\ELP\projetELP\statistics\benchmark_v4_results.csv");
 
 % Concatenate the two datasets
-combinedData = [data1; data2];
+combinedData = [data1; data2; data3];
 
 % Extract unique iterations and prepare color gradient
 uniqueIterations = unique(combinedData.Iterations);
