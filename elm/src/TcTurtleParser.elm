@@ -1,4 +1,4 @@
-module TcTurtleParser exposing (Program, Instruction(..), read)
+module TcTurtleParser exposing (TurtleProgram, Instruction(..), read)
 
 import Parser exposing 
     ( Parser, token, int, spaces
@@ -17,13 +17,13 @@ type Instruction
     | Repeat Int (List Instruction)
 
 
-type alias Program =
+type alias TurtleProgram =
     List Instruction
 
 
 -- PARSING
 
-read : String -> Result String Program
+read : String -> Result String TurtleProgram
 read input =
     case run programParser input of
         Ok program ->
@@ -39,7 +39,7 @@ deadEndToString deadEnd =
     ", col " ++ String.fromInt deadEnd.col
 
 
-programParser : Parser Program
+programParser : Parser TurtleProgram
 programParser =
     succeed identity
         |. spaces

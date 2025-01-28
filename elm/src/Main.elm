@@ -4,14 +4,14 @@ import Browser
 import Html exposing (Html, div, input, text)
 import Html.Attributes exposing (placeholder, value)
 import Html.Events exposing (onInput)
-import TcTurtleParser exposing (Program, read)
+import TcTurtleParser exposing (TurtleProgram, read)
 import TcTurtleDrawing exposing (display)
 import Svg exposing (Svg)
 
 
 -- MAIN
 
-main : Program () Model Msg
+main : Platform.Program () Model Msg
 main =
     Browser.sandbox
         { init = init
@@ -24,7 +24,7 @@ main =
 
 type alias Model =
     { input : String
-    , program : Result String Program
+    , program : Result String TurtleProgram
     }
 
 
