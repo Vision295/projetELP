@@ -43,48 +43,69 @@ parseText input =
 -- VIEW
 view : Model -> Html Msg
 view model =
-    div []
-        [ Svg.svg 
-            [ width "120"
-            , height "120"
-            , viewBox "0 0 120 120"
-            ] 
-            [ Svg.rect 
-                [ x "10"
-                , y "10"
-                , width "100"
-                , height "100"
-                , rx "15"
-                , ry "15"
-                , fill "blue"
-                ] 
-                []
-            , Svg.circle 
-                [ cx "50"
-                , cy "50"
-                , r "50"
-                , fill "red"
-                ] 
-                []
-            ]
-        , div []
-            [ Html.input
-                [ placeholder "Enter some text"
-                , value model.inputText
-                , onInput UpdateText
-                ] 
-                []
-            , button [ onClick ParseWords ] [ Html.text "Send" ]
-            ]
-        , div [] 
-            [ Html.text "Words found: "
-            , Html.text (String.fromInt (List.length model.words))
-            ]
-        , div [] 
-            [ Html.text "Words: "
-            , Html.text (String.join ", " model.words)
-            ]
-        ]
+      if model.words == ["circle"] then
+          div []
+              [ Svg.svg 
+                  [ width "120"
+                  , height "120"
+                  , viewBox "0 0 120 120"
+                  ] 
+                  [ Svg.rect 
+                      [ x "10"
+                      , y "10"
+                      , width "100"
+                      , height "100"
+                      , rx "15"
+                      , ry "15"
+                      , fill "blue"
+                      ] 
+                      []
+                  , Svg.circle 
+                      [ cx "50"
+                      , cy "50"
+                      , r "50"
+                      , fill "red"
+                      ] 
+                      []
+                  ]
+              , div []
+                  [ Html.input
+                      [ placeholder "Enter some text"
+                      , value model.inputText
+                      , onInput UpdateText
+                      ] 
+                      []
+                  , button [ onClick ParseWords ] [ Html.text "Send" ]
+                  ]
+              , div [] 
+                  [ Html.text "Words found: "
+                  , Html.text (String.fromInt (List.length model.words))
+                  ]
+              , div [] 
+                  [ Html.text "Words: "
+                  , Html.text (String.join ", " model.words)
+                  ]
+              ]
+        else
+              div[] 
+                  [ Html.input
+                      [ placeholder "Enter some text"
+                      , value model.inputText
+                      , onInput UpdateText
+                      ] 
+                      []
+                  , button [ onClick ParseWords ] [ Html.text "Send" ]
+                  
+              , div [] 
+                  [ Html.text "Words found: "
+                  , Html.text (String.fromInt (List.length model.words))
+                  ]
+              , div [] 
+                  [ Html.text "Words: "
+                  , Html.text (String.join ", " model.words)
+                  ]             
+                  ]
+
 
 -- MAIN
 main : Program () Model Msg
