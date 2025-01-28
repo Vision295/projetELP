@@ -1,32 +1,37 @@
 module Main exposing (main)
 
 import Browser
-import Html exposing (Html, div, input, svg, text, button)
-import Html.Events exposing (onClick, onInput)
+import Html exposing (Html, div, input, text)
+import Html.Attributes exposing (placeholder, value)
+import Html.Events exposing (onInput)
+import TcTurtleParser exposing (Program, read)
+import TcTurtleDrawing exposing (display)
 import Svg exposing (Svg)
-import TcTurtleParser exposing (read)
-import TcTurtleDraw exposing (display)
+
+
+-- MAIN
+
+main : Program () Model Msg
+main =
+    Browser.sandbox
+        { init = init
+        , update = update
+        , view = view
+        }
+
 
 -- MODEL
 
 type alias Model =
     { input : String
-    , parsedProgram : Result String Program
+    , program : Result String Program
     }
 
-type alias Program =
-    List Instruction
-
-type Instruction
-    = Forward Float
-    | Left Float
-    | Right Float
-    | Repeat Int (List Instruction)
 
 init : Model
 init =
-    { input = ""
-    , parsedProgram = Err "No program yet"
+    { input = "[ Forward 100, Right 90, Forward 100 ]"
+    , program = read "[ Forward 100, Right 90, Forward 100 ]"
     }
 
 
@@ -34,20 +39,16 @@ init =
 
 type Msg
     = UpdateInput String
-    | ParseInput
+
 
 update : Msg -> Model -> Model
 update msg model =
     case msg of
         UpdateInput newInput ->
-            { model | input = newInput }
-
-        ParseInput ->
-            let
-                parsed =
-                    read model.input
-            in
-            { model | parsedProgram = parsed }
+            { model
+                | input = newInput
+                , program = read newInput
+            }
 
 
 -- VIEW
@@ -55,23 +56,16 @@ update msg model =
 view : Model -> Html Msg
 view model =
     div []
-        [ div []
-            [ input [ onInput UpdateInput, Html.Attributes.placeholder "Enter TcTurtle program" ] []
-            , button [ onClick ParseInput ] [ text "Parse & Draw" ]
+        [ input
+            [ placeholder "Enter TcTurtle program"
+            , value model.input
+            , onInput UpdateInput
             ]
-        , div []
-            [ case model.parsedProgram of
-                Err error ->
-                    text ("Error: " ++ error)
+            []
+        , case model.program of
+            Ok program ->
+                display program
 
-                Ok program ->
-                    svg [ Svg.Attributes.viewBox "0 0 500 500", Svg.Attributes.width "500", Svg.Attributes.height "500" ]
-                        (display program)
-            ]
+            Err error ->
+                Html.pre [] [ text error ]
         ]
-
-
--- MAIN
-
-main =
-    Browser.sandbox { init = init, update = update, view = view }
