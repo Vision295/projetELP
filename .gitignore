@@ -1,0 +1,17 @@
+# Elm related
+.elm-stuff/      # Elm's internal build directory
+elm-package.json  # This is the default package file created by Elm
+node_modules/     # If you're using Node.js for bundling or testing
+dist/             # If you are outputting a build directory
+build/            # Output from Elm build
+*.elmo            # Elm optimizations cache file
+
+# OS generated files
+.DS_Store         # macOS specific
+Thumbs.db         # Windows specific
+
+# IDE/Editor specific files
+.vscode/           # VSCode workspace configuration
+.idea/             # JetBrains IDEs
+*.swp              # Swap files from Vim
+*.swo              # Swap files from Vim
