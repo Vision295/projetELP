@@ -2,13 +2,21 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Elm Page</title>
+    <title>Elm Drawing App</title>
     <script src="main.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="page">Type in your code below : </div>
-    <div id="app"></div>
+    <header>
+        <h1>Elm Drawing App</h1>
+        <p>Type in your TcTurtle program below to draw:</p>
+    </header>
+    <main>
+        <div id="app"></div>
+    </main>
+    <footer>
+        <p>Created with Elm</p>
+    </footer>
     <script>
         var app = Elm.Main.init({
             node: document.getElementById('app')
