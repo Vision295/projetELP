@@ -26,9 +26,9 @@ display : TurtleProgram -> Svg msg
 display program =
     let
         initialState =
-            { position = { x = 250, y = 250 }
+            { position = { x = 250, y = 0 }
             , angle = 0
-            , path = [ { x = 250, y = 250 } ]
+            , path = [ { x = 250, y = 0 } ]
             }
 
         finalState =
