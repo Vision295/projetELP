@@ -6330,7 +6330,7 @@ var $author$project$TcTurtleDrawing$display = function (program) {
 						$elm$svg$Svg$Attributes$points(
 						$author$project$TcTurtleDrawing$pointsToString(finalState.path)),
 						$elm$svg$Svg$Attributes$stroke('black'),
-						$elm$svg$Svg$Attributes$strokeWidth('2'),
+						$elm$svg$Svg$Attributes$strokeWidth('0.1'),
 						$elm$svg$Svg$Attributes$fill('none')
 					]),
 				_List_Nil)

@@ -40,7 +40,7 @@ display program =
         [ polyline
             [ points (pointsToString finalState.path)
             , stroke "black"
-            , strokeWidth "2"
+            , strokeWidth "0.1"
             , fill "none"
             ]
             []
