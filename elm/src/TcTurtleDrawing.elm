@@ -2,7 +2,7 @@ module TcTurtleDrawing exposing (display)
 
 import Svg exposing (Svg, svg, polyline)
 import Svg.Attributes exposing (viewBox, points, stroke, strokeWidth, fill)
-import TcTurtleParser exposing (Program, Instruction(..))
+import TcTurtleParser exposing (TurtleProgram, Instruction(..))
 
 
 -- TYPES
@@ -22,7 +22,7 @@ type alias State =
 
 -- DISPLAY
 
-display : Program -> Svg msg
+display : TurtleProgram -> Svg msg
 display program =
     let
         initialState =
@@ -49,7 +49,7 @@ display program =
 
 -- INTERPRETATION
 
-interpretProgram : Program -> State -> State
+interpretProgram : TurtleProgram -> State -> State
 interpretProgram instructions state =
     List.foldl interpretInstruction state instructions
 
