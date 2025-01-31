@@ -6310,16 +6310,16 @@ var $author$project$TcTurtleDrawing$display = function (program) {
 		angle: 0,
 		path: _List_fromArray(
 			[
-				{x: 250, y: 250}
+				{x: 50, y: 0}
 			]),
-		position: {x: 250, y: 250}
+		position: {x: 50, y: 0}
 	};
 	var finalState = A2($author$project$TcTurtleDrawing$interpretProgram, program, initialState);
 	return A2(
 		$elm$svg$Svg$svg,
 		_List_fromArray(
 			[
-				$elm$svg$Svg$Attributes$viewBox('0 0 500 500')
+				$elm$svg$Svg$Attributes$viewBox('0 0 100 100')
 			]),
 		_List_fromArray(
 			[
