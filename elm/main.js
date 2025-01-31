@@ -6381,10 +6381,16 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 			$elm$json$Json$Encode$string(string));
 	});
 var $elm$html$Html$Attributes$placeholder = $elm$html$Html$Attributes$stringProperty('placeholder');
-var $elm$html$Html$pre = _VirtualDom_node('pre');
-var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
-var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
+var $elm$core$Result$withDefault = F2(
+	function (def, result) {
+		if (result.$ === 'Ok') {
+			var a = result.a;
+			return a;
+		} else {
+			return def;
+		}
+	});
 var $author$project$Main$view = function (model) {
 	return A2(
 		$elm$html$Html$div,
@@ -6400,22 +6406,8 @@ var $author$project$Main$view = function (model) {
 						$elm$html$Html$Events$onInput($author$project$Main$UpdateInput)
 					]),
 				_List_Nil),
-				function () {
-				var _v0 = model.program;
-				if (_v0.$ === 'Ok') {
-					var program = _v0.a;
-					return $author$project$TcTurtleDrawing$display(program);
-				} else {
-					var error = _v0.a;
-					return A2(
-						$elm$html$Html$pre,
-						_List_Nil,
-						_List_fromArray(
-							[
-								$elm$html$Html$text(error)
-							]));
-				}
-			}()
+				$author$project$TcTurtleDrawing$display(
+				A2($elm$core$Result$withDefault, _List_Nil, model.program))
 			]));
 };
 var $author$project$Main$main = $elm$browser$Browser$sandbox(
