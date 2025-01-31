@@ -58,3 +58,10 @@ input:focus, textarea:focus {
     border-color: #4a90e2;
     outline: none;
 }
+
+div {
+     padding: 20px 20px;
+     border:rgba(0, 0, 0, 0.1) solid 1px;
+      border-radius: 8px;
+       
+}
