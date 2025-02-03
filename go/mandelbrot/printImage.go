@@ -10,14 +10,13 @@ import (
 )
 
 // PrintOnImage generates the Mandelbrot image using parallel processing.
-func PrintOnImage(m Mandelbrot, filePath string, numGoroutines, nbIterations int) (Mandelbrot, error) {
+func PrintOnImage(m Mandelbrot, filePath string, numGoroutines, nbIterations int) error {
 	/*
 		prints mandelbrot onto an image
 			using numGoroutines goroutines slicing the image into vertical slices
 			with a precision of nbIteration iterations
 	*/
 	// initial values
-	m.Image = image.NewRGBA(image.Rect(0, 0, m.Width, m.Height))
 	var wg sync.WaitGroup
 	rowsPerGoroutine := m.Height / numGoroutines
 
@@ -45,7 +44,7 @@ func PrintOnImage(m Mandelbrot, filePath string, numGoroutines, nbIterations int
 	wg.Wait()
 
 	SaveImage(rowList, rowOrders, m, numGoroutines, filePath)
-	return m, nil
+	return nil
 }
 
 func ComputeOnSample(rowList chan [][]color.RGBA, rowOrder chan int, m Mandelbrot, wg *sync.WaitGroup, nbIterations, routineStep, start, end int) error {
@@ -110,8 +109,6 @@ func SaveImage(rowList chan [][]color.RGBA, rowOrder chan int, m Mandelbrot, num
 			imageList[index*len(val)+j] = val[j]
 		}
 	}
-	fmt.Println(len(imageList), len(imageList[0]))
-	fmt.Println(imageList[1000])
 
 	image := image.NewRGBA(image.Rect(0, 0, m.Width, m.Height))
 
