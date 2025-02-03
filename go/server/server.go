@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"encoding/base64"
 	"fmt"
+
 	"log"
 	. "mandelbrot/mandelbrot"
 	"net"
@@ -15,56 +16,75 @@ import (
 
 func main() {
 	listener, err := net.Listen("tcp", "localhost:8080")
+	//creates TCP server that listens for incoming connections on port8080
 
 	if err != nil {
 		log.Fatal("Error starting server:", err)
+		//fmt.Println("Error starting server:", err)
+		//logs the error and stops the program immediately
 	}
 
 	defer listener.Close()
+	//ensures when main exits the server properly closes
 	fmt.Println("Server is listening on port 8080...")
 
 	var wg sync.WaitGroup
+	//variable de type sync.WaitGroup => permet aux goroutines de terminer leur execution avant la fin du programme
 
 	for {
+		//loops continuously
 		conn, err := listener.Accept()
+		//listener.Accept() blocks until a client accepts then returns an net.conn object
 		if err != nil {
 			fmt.Println("Error accepting connection:", err)
-			return
+			break
+
 		}
 
-		wg.Add(1)
-		fmt.Printf("New client connected: %s\n", conn.RemoteAddr().String())
-		go handleConnection(conn, &wg)
+		wg.Add(1)                                                            //increment the counter to track an additional goroutine
+		fmt.Printf("New client connected: %s\n", conn.RemoteAddr().String()) //prints the client's IP address
+		go handleConnection(conn, &wg)                                       // launches a goroutine to handle the client without blocking the server
 	}
+
+	wg.Wait()
+	//waits for all goroutines to finish before exiting
+	fmt.Println("Server shutting down.")
 }
 
 func handleConnection(conn net.Conn, wg *sync.WaitGroup) {
+	//net.Conn objects represent connection to the client, wg is a pointer to a waitgroup so it can change it's values
 	defer wg.Done()
+	//Ensures that when the function exits, wg.Done() is called to signal that this goroutine is finished.
 	defer conn.Close()
+	//Ensures that the client connection is properly closed when the function exits.
 
 	reader := bufio.NewReader(conn)
+	//Wraps conn in a buffered reader, making it efficient for reading commands from the client (instead of reading byte by byte)
 	writer := bufio.NewWriter(conn)
-
+	//Wraps conn in a buffered writer, allowing efficient writing before flushing data to the client.
 	for {
 		writer.WriteString("Enter a command (type 'end' to quit, 'send image' to get the image): \n")
 		writer.Flush()
+		//sends prompt to the client
 
-		command, err := reader.ReadString('\n')
+		command, err := reader.ReadString('\n') //reads input until a newline is received
+
 		if err != nil {
 			fmt.Print("Error reading from client:", err)
 			return
 		}
 
-		command = strings.TrimSpace(command)
+		command = strings.TrimSpace(command) //removes leading and trailing spaces
 
 		if command == "end" {
 			fmt.Print("Client disconnected.")
 			return
+			// if the user sent "end", the server disconnects the client
 		} else if command == "send image" {
 			// Collect parameters
 			var xmin, xmax, ymin, ymax float32
 
-			// Helper function to read and parse a float32 value
+			// Helper inline function to read and parse a float32 value
 			readFloat := func(prompt string) (float32, error) {
 				writer.WriteString(prompt)
 				writer.Flush()
@@ -73,11 +93,11 @@ func handleConnection(conn net.Conn, wg *sync.WaitGroup) {
 					return 0, err
 				}
 				input = strings.TrimSpace(input)
-				val, err := strconv.ParseFloat(input, 32)
+				val, err := strconv.ParseFloat(input, 32) //converts to float32 precision but still returns float64
 				if err != nil {
 					return 0, fmt.Errorf("invalid float value: %s", input)
 				}
-				return float32(val), nil
+				return float32(val), nil //converts to float64
 			}
 
 			// Read and parse each parameter
@@ -85,7 +105,7 @@ func handleConnection(conn net.Conn, wg *sync.WaitGroup) {
 			if err != nil {
 				writer.WriteString("Invalid input for Xmin. Please try again.\n")
 				writer.Flush()
-				continue
+				continue //continue makes it ask for the var again
 			}
 
 			xmax, err = readFloat("Enter Xmax: \n")
@@ -131,8 +151,7 @@ func handleConnection(conn net.Conn, wg *sync.WaitGroup) {
 				return
 			}
 
-			// Save the image with a name based on dimensions
-			fileName := fmt.Sprintf("Mandelbrot.png")
+			fileName := "Mandelbrot.png"
 			err = mandelbrot.SaveImage(fileName)
 			if err != nil {
 				fmt.Println("Error saving image:", err)
@@ -157,13 +176,12 @@ func handleConnection(conn net.Conn, wg *sync.WaitGroup) {
 
 func sendImage(writer *bufio.Writer) error {
 	// Read the image file
-	imageData, err := os.ReadFile("Mandelbrot.png")
+	imageData, err := os.ReadFile("Mandelbrot.png") //reads the imagefile into imageData
 	if err != nil {
 		return fmt.Errorf("failed to read image file: %w", err)
 	}
 
-	// Convert to base64
-	base64Data := base64.StdEncoding.EncodeToString(imageData)
+	base64Data := base64.StdEncoding.EncodeToString(imageData) //converts image into a base64 string which is easier to transmit using tcp
 
 	// Send the image size first
 	sizeMsg := fmt.Sprintf("IMAGE_SIZE:%d\n", len(base64Data))

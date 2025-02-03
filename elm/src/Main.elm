@@ -62,10 +62,5 @@ view model =
             , onInput UpdateInput
             ]
             []
-        , case model.program of
-            Ok program ->
-                display program
-
-            Err error ->
-                Html.pre [] [ text error ]
+        , display (Result.withDefault [] model.program) -- Default to an empty program if there's an error
         ]

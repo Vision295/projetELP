@@ -5,7 +5,6 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io"
-	"log"
 	"net"
 	"os"
 	"strconv"
@@ -42,8 +41,8 @@ func readFromServer(conn net.Conn) {
 		}
 		message = strings.TrimSpace(message)
 
-		if strings.HasPrefix(message, "IMAGE_SIZE:") {
-			size, err := strconv.Atoi(strings.TrimPrefix(message, "IMAGE_SIZE:"))
+		if strings.HasPrefix(message, "IMAGE_SIZE:") { //checks if message string starts with "IMAGE_SIZE:"
+			size, err := strconv.Atoi(strings.TrimPrefix(message, "IMAGE_SIZE:")) //trims the prefix from the string and converts it to an integer
 			if err != nil {
 				fmt.Println("Error parsing image size:", err)
 				continue
@@ -65,34 +64,37 @@ func receiveImage(reader *bufio.Reader, size int) {
 
 	// Read the base64 data
 	var base64Data strings.Builder
-	base64Data.Grow(size) // Pre-allocate the required size
+	//strings.Builder is a buffer used to efficiently build strings.
+	//It allows you to append strings to it without creating a new string every time.
+
+	base64Data.Grow(size) // pre-allocates memory in the builder for the expected size
 
 	for base64Data.Len() < size {
-		chunk, err := reader.ReadString('\n')
+		chunk, err := reader.ReadString('\n') // because end message sent is \nEND_IMAGE\n
 		if err != nil && err != io.EOF {
 			fmt.Println("Error reading image data:", err)
 			return
 		}
 
 		// Check if we've reached the end marker
-		if strings.TrimSpace(chunk) == "END_IMAGE" {
-			break
-		}
+		//if strings.TrimSpace(chunk) == "END_IMAGE" {
+		//	break
+		//}
 
-		base64Data.WriteString(strings.TrimSpace(chunk))
+		base64Data.WriteString(strings.TrimSpace(chunk)) //chunk is added to the base64Data string builder
 		fmt.Printf("Received %d/%d bytes\n", base64Data.Len(), size)
 	}
 
 	// Decode base64 data
 	imageData, err := base64.StdEncoding.DecodeString(base64Data.String())
 	if err != nil {
-		log.Fatal("Error creating file:", err)
-		fmt.Println("Error decoding image data:", err)
+		//log.Fatal("Error creating file:", err)
+		fmt.Println("Error decoding image data and creating file:", err)
 		return
 	}
 
 	// Save the image
-	err = os.WriteFile("received_image.png", imageData, 0644)
+	err = os.WriteFile("received_image.png", imageData, 0644) // writes the decoded image data to a file, 0644 specifies that the file will be readable and writable by the owner, and readable by others.
 	if err != nil {
 		fmt.Print("Error saving image:", err)
 		return
@@ -102,13 +104,13 @@ func receiveImage(reader *bufio.Reader, size int) {
 }
 
 func writeToServer(conn net.Conn) {
-	scanner := bufio.NewScanner(os.Stdin)
+	scanner := bufio.NewScanner(os.Stdin) //Creates a new Scanner object that reads input from the standard input
 	for {
 		fmt.Print("Enter command: ")
-		scanner.Scan()
-		userInput := scanner.Text()
+		scanner.Scan()              //reads from the console until enter
+		userInput := scanner.Text() // retrieves as a string
 		if strings.TrimSpace(userInput) != "" {
-			_, err := conn.Write([]byte(userInput + "\n"))
+			_, err := conn.Write([]byte(userInput + "\n")) //converts the string to a byte slice required by conn.Write
 			if err != nil {
 				fmt.Print("Error sending to server:", err)
 				return

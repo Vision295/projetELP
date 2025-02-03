@@ -102,3 +102,11 @@ div {
       border-radius: 8px;
        
 }
+
+svg {
+    width: 100%;
+    height: auto;
+    max-width: 400px; /* Adjust as needed */
+    display: block;
+    margin: auto;
+}

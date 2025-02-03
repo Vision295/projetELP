@@ -26,21 +26,21 @@ display : TurtleProgram -> Svg msg
 display program =
     let
         initialState =
-            { position = { x = 50, y = 0 }
+            { position = { x = 250, y = 250 }
             , angle = 0
-            , path = [ { x = 50, y = 0 } ]
+            , path = [ { x = 250, y = 250 } ]
             }
 
         finalState =
             interpretProgram program initialState
     in
     svg
-        [ viewBox "0 0 100 100"
+        [ viewBox "0 0 500 500"
         ]
         [ polyline
             [ points (pointsToString finalState.path)
             , stroke "black"
-            , strokeWidth "0.1"
+            , strokeWidth "2"
             , fill "none"
             ]
             []
