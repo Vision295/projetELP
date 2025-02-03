@@ -12,14 +12,14 @@ const (
 )
 
 type Mandelbrot struct {
-	Width, Height uint32
+	Width, Height int
 	XMin, XMax    float64
 	YMin, YMax    float64
 	Image         *image.RGBA
 }
 
 // NewMandelbrot initializes a new Mandelbrot set configuration with specified dimensions.
-func NewMandelbrot(width, height uint32) Mandelbrot {
+func NewMandelbrot(width, height int) Mandelbrot {
 	return Mandelbrot{
 		Width:  width,
 		Height: height,

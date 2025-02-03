@@ -6,31 +6,6 @@ import (
 	"time"
 )
 
-/*
-var mandelbrot = NewMandelbrot()
-
-func main() {
-	var errOnImagePrint = (&mandelbrot).PrintOnImage(100)
-	if errOnImagePrint != nil {
-		panic(errOnImagePrint)
-	}
-
-	// Create a file to save the image.
-	file, errOnImageCreation := os.Create("mandelbrot.png")
-	if errOnImageCreation != nil {
-		panic(errOnImageCreation)
-	}
-	defer file.Close()
-
-	// Encode the image to PNG format and save it to the file.
-	if err := png.Encode(file, mandelbrot.Image); err != nil {
-		panic(err)
-	}
-
-	println("Mandelbrot set image saved as mandelbrot.png")
-}
-*/
-
 func main() {
 	// Define image dimensions
 	const width, height = 3840, 2160
@@ -46,7 +21,8 @@ func main() {
 	*/
 
 	start := time.Now()
-	err := mandelbrot.PrintOnImage(numGoRoutines, nbIteration)
+	fileName := fmt.Sprintf("Mandelbrot_image_(%dx%d)_with_%dgoroutines.png.png", width, height, numGoRoutines)
+	mandelbrot, err := PrintOnImage(mandelbrot, fileName, numGoRoutines, nbIteration)
 	elapsed := time.Since(start)
 
 	if err != nil {
@@ -55,8 +31,6 @@ func main() {
 	}
 
 	// Save the image with a name based on dimensions
-	fileName := fmt.Sprintf("Mandelbrot_image_(%dx%d)_%v_with_%dgoroutines.png.png", width, height, elapsed, numGoRoutines)
-	err = mandelbrot.SaveImage(fileName)
 	if err != nil {
 		fmt.Println("Error saving image:", err)
 	} else {
