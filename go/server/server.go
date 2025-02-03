@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"encoding/base64"
 	"fmt"
+
 	"log"
 	. "mandelbrot/mandelbrot"
 	"net"
@@ -19,6 +20,7 @@ func main() {
 
 	if err != nil {
 		log.Fatal("Error starting server:", err)
+		//fmt.Println("Error starting server:", err)
 		//logs the error and stops the program immediately
 	}
 
