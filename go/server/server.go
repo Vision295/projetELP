@@ -144,19 +144,12 @@ func handleConnection(conn net.Conn, wg *sync.WaitGroup) {
 			mandelbrot.YMin = float64(ymin)
 			mandelbrot.YMax = float64(ymax)
 
-			err := mandelbrot.PrintOnImage(numGoRoutines, nbIteration)
+			fileName := "Mandelbrot.png"
+			err := PrintOnImage(mandelbrot, fileName, numGoRoutines, nbIteration)
 
 			if err != nil {
 				fmt.Print("Error generating Mandelbrot image:", err)
 				return
-			}
-
-			fileName := "Mandelbrot.png"
-			err = mandelbrot.SaveImage(fileName)
-			if err != nil {
-				fmt.Println("Error saving image:", err)
-			} else {
-				fmt.Printf("Mandelbrot image saved!\n")
 			}
 
 			writer.WriteString("Image generation triggered successfully.\n")

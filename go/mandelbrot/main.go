@@ -1,7 +1,5 @@
 package mandelbrot
 
-import "image"
-
 // Constants for the range of the Mandelbrot set
 const (
 	/*
@@ -15,7 +13,6 @@ type Mandelbrot struct {
 	Width, Height int
 	XMin, XMax    float64
 	YMin, YMax    float64
-	Image         *image.RGBA
 }
 
 // NewMandelbrot initializes a new Mandelbrot set configuration with specified dimensions.
@@ -27,6 +24,5 @@ func NewMandelbrot(width, height int) Mandelbrot {
 		XMax:   XMax,
 		YMin:   YMin,
 		YMax:   YMax,
-		Image:  nil,
 	}
 }
