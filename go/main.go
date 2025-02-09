@@ -22,7 +22,7 @@ func main() {
 
 	start := time.Now()
 	fileName := fmt.Sprintf("Mandelbrot_image_(%dx%d)_with_%dgoroutines.png.png", width, height, numGoRoutines)
-	mandelbrot, err := PrintOnImage(mandelbrot, fileName, numGoRoutines, nbIteration)
+	err := PrintOnImage(mandelbrot, fileName, numGoRoutines, nbIteration)
 	elapsed := time.Since(start)
 
 	if err != nil {

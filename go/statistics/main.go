@@ -10,55 +10,46 @@ import (
 
 func main() {
 	// Check if sufficient arguments are provided
-	if len(os.Args) < 5 {
+	if len(os.Args) < 3 {
 		fmt.Println("Error: Insufficient arguments provided.")
-		fmt.Println("Usage: go run main.go <width> <height> <numGoRoutines> <nbIteration>")
+		fmt.Println("Usage: go run main.go <numGoRoutines> <nbIteration>")
 		os.Exit(1)
 	}
 
 	// Parse arguments
-	width, err := strconv.Atoi(os.Args[1])
-	if err != nil {
-		fmt.Printf("Error parsing width: %v\n", err)
-		os.Exit(1)
-	}
-
-	height, err := strconv.Atoi(os.Args[2])
-	if err != nil {
-		fmt.Printf("Error parsing height: %v\n", err)
-		os.Exit(1)
-	}
-
-	numGoRoutines, err := strconv.Atoi(os.Args[3])
+	numGoRoutines, err := strconv.Atoi(os.Args[1])
 	if err != nil {
 		fmt.Printf("Error parsing numGoRoutines: %v\n", err)
 		os.Exit(1)
 	}
 
-	nbIteration, err := strconv.Atoi(os.Args[4])
+	nbIteration, err := strconv.Atoi(os.Args[2])
 	if err != nil {
 		fmt.Printf("Error parsing nbIteration: %v\n", err)
 		os.Exit(1)
 	}
 
-	// Convert dimensions to uint32 for NewMandelbrot
-	mandelbrot := NewMandelbrot(uint32(width), uint32(height))
+	// Define image dimensions
+	const width, height = 3840, 2160
+
+	mandelbrot := NewMandelbrot(width, height)
+	/*
+	   mandelbrot.XMin = -1
+	   mandelbrot.XMax = 0.5
+	   mandelbrot.YMin = -0.75
+	   mandelbrot.YMax = 0.75
+	*/
 
 	start := time.Now()
-	err = mandelbrot.PrintOnImage(numGoRoutines, nbIteration)
+	fileName := fmt.Sprintf("Mandelbrot_%dx%d_%dIterations_%dGoroutines.png", width, height, nbIteration, numGoRoutines)
+	fmt.Printf("Generating Mandelbrot image with %d goroutines and %d iterations...\n", numGoRoutines, nbIteration)
+	err = PrintOnImage(mandelbrot, fileName, numGoRoutines, nbIteration)
 	elapsed := time.Since(start)
 
 	if err != nil {
-		fmt.Println("Error generating Mandelbrot image:", err)
-		return
+		fmt.Printf("Error generating Mandelbrot image: %v\n", err)
+		os.Exit(1)
 	}
 
-	// Corrected filename generation order
-	fileName := fmt.Sprintf("Mandelbrot_%dx%d_%dIterations_%dGoroutines.png", width, height, nbIteration, numGoRoutines)
-	err = mandelbrot.SaveImage(fileName)
-	if err != nil {
-		fmt.Println("Error saving image:", err)
-	} else {
-		fmt.Printf("Image saved as %s in %v\n", fileName, elapsed)
-	}
+	fmt.Printf("Mandelbrot_%dx%d_%dIterations_%dGoroutines.png generated in %v\n", width, height, nbIteration, numGoRoutines, elapsed)
 }

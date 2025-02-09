@@ -13,26 +13,29 @@ import (
 
 // Configuration for the parameter sweep
 const (
-	OutputFile = "benchmark_v4_results.csv" // File to store the results
+	OutputFile = "new_new_new_benchmark_results.csv" // File to store the results
 
 	ImageWidth  = 3840 // Fixed width for the image
 	ImageHeight = 2160 // Fixed height for the image
 
-	MinIterations = 1    // Minimum number of iterations
-	MaxIterations = 1000 // Maximum number of iterations
+	MinIterations = 2000 // Minimum number of iterations
+	MaxIterations = 3000 // Maximum number of iterations
 	IterationStep = 20   // Step size for iterations
 
-	MinGoroutines = 60  // Minimum number of goroutines
-	MaxGoroutines = 100 // Maximum number of goroutines
-	GoroutineStep = 1   // Step size for goroutines
+	MinGoroutines = 1    // Minimum number of goroutines
+	MaxGoroutines = 2161 // Maximum number of goroutines
+	GoroutineStep = 1    // Step size for goroutines
+
+	NbAvgTest = 2 // Number of times to run the test and average the results
 )
 
-func compareImages(width, height, nbIterations, numGoRoutines int, perfectImage string) (float64, error) {
-	// Construct the path to the generated image
-	path := fmt.Sprintf("Mandelbrot_%dx%d_%dIterations_%dGoroutines.png", width, height, nbIterations, numGoRoutines)
+func isDivisor(n int) bool {
+	return 2160%n == 0
+}
 
+func compareImages(fileName, perfectImage string) (float64, error) {
 	// Open the generated image
-	genFile, err := os.Open(path)
+	genFile, err := os.Open(fileName)
 	if err != nil {
 		return 0, fmt.Errorf("error opening generated image: %v", err)
 	}
@@ -71,20 +74,19 @@ func compareImages(width, height, nbIterations, numGoRoutines int, perfectImage 
 			genR, genG, genB, _ := genImg.At(x, y).RGBA()
 			perfR, perfG, perfB, _ := perfImg.At(x, y).RGBA()
 
-			// Compute sqrt((R_diff)^2 + (G_diff)^2 + (B_diff)^2)
-			rDiff := float64(genR>>8) - float64(perfR>>8)
-			gDiff := float64(genG>>8) - float64(perfG>>8)
-			bDiff := float64(genB>>8) - float64(perfB>>8)
-			pixelDifference := math.Sqrt(rDiff*rDiff + gDiff*gDiff + bDiff*bDiff)
+			// Compute the magnitude of the color vectors
+			genMagnitude := math.Sqrt(float64(genR*genR + genG*genG + genB*genB))
+			perfMagnitude := math.Sqrt(float64(perfR*perfR + perfG*perfG + perfB*perfB))
 
-			// Accumulate absolute difference
-			totalDifference += math.Abs(pixelDifference)
+			// Compute the absolute difference in magnitudes
+			pixelDifference := math.Abs(genMagnitude - perfMagnitude)
+
+			// Accumulate the difference
+			totalDifference += pixelDifference
 		}
 	}
 
-	// Normalize by the square of the number of pixels
-	result := totalDifference / numPixels
-	return result, nil
+	return totalDifference / numPixels, nil
 }
 
 func main() {
@@ -110,29 +112,32 @@ func main() {
 	// Sweep through the parameter space
 	for iterations := MinIterations; iterations <= MaxIterations; iterations += IterationStep {
 		for goroutines := MinGoroutines; goroutines <= MaxGoroutines; goroutines += GoroutineStep {
+			if !isDivisor(goroutines) {
+				fmt.Printf("Skipping non-divisor number of goroutines: %d\n", goroutines)
+				continue
+			}
+
 			var totalExecutionTime int64
 			var totalScore float64
 
 			// Run the test 10 times and average the results
-			for i := 0; i < 10; i++ {
+			for i := 0; i < NbAvgTest; i++ {
 				start := time.Now()
+				fileName := fmt.Sprintf("Mandelbrot_%dx%d_%dIterations_%dGoroutines.png", ImageWidth, ImageHeight, iterations, goroutines)
 				cmd := exec.Command("go", "run", "main.go",
-					strconv.Itoa(ImageWidth),
-					strconv.Itoa(ImageHeight),
 					strconv.Itoa(goroutines),
 					strconv.Itoa(iterations),
 				)
-				err := cmd.Run()
+				output, err := cmd.CombinedOutput()
 				if err != nil {
-					fmt.Printf("Error running Mandelbrot program: %v\n", err)
+					fmt.Printf("Error running Mandelbrot program: %v\nOutput: %s\n", err, string(output))
 					continue
 				}
 				executionTime := time.Since(start).Milliseconds()
 				totalExecutionTime += executionTime
 
 				// Compare the generated image with the "perfect" image and calculate SSIM
-				score, err := compareImages(ImageWidth, ImageHeight, iterations, goroutines, "Perfect_Mandelbrot.png")
-				// println(ssimScore)
+				score, err := compareImages(fileName, "Perfect_Mandelbrot.png")
 				if err != nil {
 					fmt.Println("Error comparing images:", err)
 					continue
@@ -141,8 +146,8 @@ func main() {
 			}
 
 			// Calculate the average execution time and SSIM
-			avgExecutionTime := totalExecutionTime / 10
-			avgScore := totalScore / 10
+			avgExecutionTime := totalExecutionTime / NbAvgTest
+			avgScore := totalScore / NbAvgTest
 
 			// Write the result to the CSV file
 			err = writer.Write([]string{
@@ -157,7 +162,7 @@ func main() {
 			}
 
 			// Print progress to the console
-			fmt.Printf("Completed: Iterations=%d, Goroutines=%d, AvgExecutionTime=%dms, AvgSSIM=%.2f\n", iterations, goroutines, avgExecutionTime, avgScore)
+			fmt.Printf("Completed: Iterations=%d, Goroutines=%d, AvgExecutionTime=%dms, Quality=%.5f\n", iterations, goroutines, avgExecutionTime, avgScore)
 		}
 	}
 
