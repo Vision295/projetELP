@@ -40,7 +40,10 @@ main {
     justify-content: center;
     align-items: center;
     padding: 20px;
+    /*width: 90vw;  /* Take 90% of the viewport width */
+    /*height: 80vh; /* Take 80% of the viewport height */
 }
+
 
 #app {
     background-color: #fff;
@@ -106,7 +109,7 @@ div {
 svg {
     width: 100%;
     height: auto;
-    max-width: 400px; /* Adjust as needed */
+    max-width: 400; /* Adjust as needed */
     display: block;
     margin: auto;
 }
