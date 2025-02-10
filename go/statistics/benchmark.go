@@ -13,7 +13,7 @@ import (
 
 // Configuration for the parameter sweep
 const (
-	OutputFile = "new_new_new_benchmark_results.csv" // File to store the results
+	OutputFile = "new_new_new_benchmark_results.csv"
 
 	ImageWidth  = 3840 // Fixed width for the image
 	ImageHeight = 2160 // Fixed height for the image
@@ -26,7 +26,7 @@ const (
 	MaxGoroutines = 2161 // Maximum number of goroutines
 	GoroutineStep = 1    // Step size for goroutines
 
-	NbAvgTest = 2 // Number of times to run the test and average the results
+	NbAvgTest = 5 // Number of times to run the test and average the results
 )
 
 func isDivisor(n int) bool {
